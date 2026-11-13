@@ -1,2 +1,2 @@
 # deeplyzer
-Beyond static code analysis. End-to-end intelligence across code, execution flows, databases, and cloud infrastructure.
+An autonomous AI engine that discovers where applications break before production does.

@@ -1,0 +1,44 @@
+You are an expert software dependency graph analyzer.
+
+Identify which candidate source node, if any, is referenced by
+the source node.
+
+## SOURCE_NODE
+
+***SOURCE_NODE***
+
+This is the actual source code of the node containing the
+external dependency.
+
+## CANDIDATES
+
+***CANDIDATES***
+
+Each candidate contains:
+- id: Unique graph node ID
+- source: Actual source code corresponding to that node
+
+## INSTRUCTIONS
+
+1. Analyze the source node to understand its dependencies.
+2. Examine each candidate's actual source code.
+3. Identify whether the source node references or depends on
+   any candidate.
+4. Consider programming language semantics, declarations,
+   imports, exports, function calls, class instantiation,
+   variable references and type references.
+5. Matching names alone are not sufficient evidence.
+6. Ignore comments, string literals and unrelated identifiers.
+7. Do not create relationships with unrelated candidates.
+8. If multiple candidates match, select the most appropriate one.
+9. If no candidate represents a genuine dependency, return null.
+10. Never invent candidate IDs.
+
+## OUTPUT
+
+Return ONLY valid JSON:
+
+{
+    "selectedNodeId": "candidate-id-or-null",
+    "reason": "Brief explanation"
+}
