@@ -81,7 +81,7 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 ```json
 {
   "sources": [],
-  "source-exclusions": [],
+  "source_exclusions": [],
   "llm": {
     "provider": "openai",
     "model": "gpt-6.1-sol",
@@ -98,7 +98,7 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 | Option | Required | Default | Description |
 |---|---|---|---|
 | `sources` | Yes | `[]` | Source files or directories to analyze. |
-| `source-exclusions` | No | `[]` | Files or directories to exclude from analysis. |
+| `source_exclusions` | No | `[]` | Files or directories to exclude from analysis. |
 | `llm.provider` | Yes | - | LLM provider (`openai`, `claude`, `gemini`). |
 | `llm.model` | Yes | - | Model to use for analysis. |
 | `llm.apiKey` | Yes | - | API key for the selected LLM provider. |

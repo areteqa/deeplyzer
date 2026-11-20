@@ -4,16 +4,14 @@ const StaticAnalyzer = require('./analysis/static/staticAnalyzer');
 
 const DeepAnalysisOrchestrator = require('./analysis/deep/orchestrator');
 
+const Logger = require('./utils/logger');
 const globals = require("./globals");
 
 class Engine {
-    constructor() {
-    }
-
     async run() {
         try {
-            console.log("[ENGINE] Starting Deeplyzer...");
-            console.log("[ENGINE] Configuration loaded.");
+            Logger.essential("[ENGINE] Starting Deeplyzer...");
+            Logger.essential("[ENGINE] Configuration loaded.");
 
             // step 1: build graph
             let graphs;
@@ -37,15 +35,15 @@ class Engine {
 
             // step 4: perform deep code analysis
             if (globals.config.deep_analysis ?? true) {
-                console.log("[ENGINE] Starting deep analysis...");
+                Logger.essential("[ENGINE] Starting deep analysis...");
                 const orchestrator = new DeepAnalysisOrchestrator();
                 //await orchestrator.analyzeWorkflows(null);
                 await orchestrator.analyzeInfra(graphs);
             }
 
-            console.log("[ENGINE] Execution completed.");
+            Logger.essential("[ENGINE] Execution completed.");
         } catch (error) {
-            console.error("[ENGINE ERROR]", error);
+            Logger.error("[ENGINE ERROR]", error);
             throw error;
         }
     }

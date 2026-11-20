@@ -2,6 +2,7 @@ const FileUtil = require('../utils/fileUtil');
 const IdUtil = require('../utils/idUtil');
 const LLM = require("../llm/llm");
 const PromptsUtil = require('../utils/promptsUtil');
+const Logger = require('../utils/logger');
 const globals = require("../globals");
 const path = require("path");
 
@@ -15,10 +16,12 @@ class GraphService {
     }
 
     async buildGraphs() {
-        console.log("Building nodes is in-progress");
+        Logger.essential("Understading source structure");
+
+        Logger.essential("Building nodes is in-progress");
         await this._buildNodes();
 
-        console.log("Connecting edges");
+        Logger.essential("Connecting edges");
         await this._buildExternalEdges();
     }
 
@@ -53,7 +56,7 @@ class GraphService {
 
     async _buildNodes() {
         const sourceFiles = globals.config.sources;
-        const exclusions = globals.config["source-exclusions"];
+        const exclusions = globals.config["source_exclusions"];
 
         this.sources = this.fileUtil.readPaths(sourceFiles, exclusions);
 

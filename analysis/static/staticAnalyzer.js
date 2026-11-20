@@ -2,6 +2,7 @@ const FileUtil = require('../../utils/fileUtil');
 const LLM = require("../../llm/llm");
 const PromptsUtil = require('../../utils/promptsUtil');
 const globals = require("../../globals");
+const Logger = require('../../utils/logger');
 
 class StaticAnalyzer {
     constructor() {
@@ -19,7 +20,8 @@ class StaticAnalyzer {
 
             let prompt = PromptsUtil.read("static_analysis");
             prompt = prompt.replaceAll("***SOURCE_CODE***", source);
-console.log(prompt);
+            Logger.detailed(prompt);
+
             const response = await this.llm.generate({ prompt: prompt });
 
             results.push({

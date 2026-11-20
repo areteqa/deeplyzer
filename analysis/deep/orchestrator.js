@@ -2,6 +2,8 @@ const WorkflowAnalysisPlanner = require('./plan/workflowAnalysisPlanner');
 const PlanExecutor = require('./exec/planExecutor');
 const InfraAnalysisPlanner = require('./plan/infraAnalysisPlanner');
 
+const Logger = require('../../utils/logger');
+
 class DeepAnalysisOrchestrator {
     constructor(config) {
         this.config = config;
@@ -25,13 +27,13 @@ class DeepAnalysisOrchestrator {
         
         let exit = false, count = 0, plan, responses;        
         while(!exit) {
-            console.log("Generating infra validation plan");
+            Logger.essential("Generating infra validation plan");
             plan = await planner.plan(plan, responses);
 
-            console.log("Executing infra validations");
+            Logger.essential("Executing infra validations");
             responses = await this.planExecutor.exec(plan);
 
-            console.log("Checking infra validation exit");
+            Logger.essential("Checking infra validation exit");
             exit = planner.checkExit(plan, responses);
 
             count = count + 1;
