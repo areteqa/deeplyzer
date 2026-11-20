@@ -16,13 +16,28 @@ class GraphService {
     }
 
     async buildGraphs() {
-        Logger.essential("Understading source structure");
+        Logger.essential("Finding source exclusions");
+        await this._identifyExclusions();
 
         Logger.essential("Building nodes is in-progress");
         await this._buildNodes();
 
         Logger.essential("Connecting edges");
         await this._buildExternalEdges();
+    }
+
+    async _identifyExclusions() {
+        const sources = this.fileUtil.readPaths(globals.config.sources, globals.config["source_exclusions"]);
+        const folders = [...new Set(sources.map(source => path.dirname(source.path)))];
+
+        let prompt = PromptsUtil.read("source_exclusions");
+        prompt = prompt.replaceAll("***PATHS***", JSON.stringify(folders));
+        Logger.detailed(prompt);
+
+        const response = await this.llm.generate({ prompt: prompt });
+        Logger.detailed(response);
+
+        this.additionalExclusions = Array.isArray(response) ? response : [];
     }
 
     async loadGraphs() {
@@ -56,7 +71,10 @@ class GraphService {
 
     async _buildNodes() {
         const sourceFiles = globals.config.sources;
-        const exclusions = globals.config["source_exclusions"];
+        const exclusions = [...new Set([
+                                ...(globals.config["source_exclusions"] || []),
+                                ...(this.additionalExclusions)])
+                            ]; // merge exclusions, duplicates removed
 
         this.sources = this.fileUtil.readPaths(sourceFiles, exclusions);
 
@@ -67,31 +85,19 @@ class GraphService {
                 batch.map(async (source) => {
                     let prompt = PromptsUtil.read("build_nodes");
 
-                    prompt = prompt.replaceAll(
-                        "***CONTENT***",
-                        JSON.stringify(source.content)
-                    );
-
-                    prompt = prompt.replaceAll(
-                        "ID-PREFIX",
-                        IdUtil.generate()
-                    );
+                    prompt = prompt.replaceAll("***CONTENT***", JSON.stringify(source.content));
+                    prompt = prompt.replaceAll("ID-PREFIX", IdUtil.generate());
+                    Logger.detailed(prompt);
 
                     const response = await this.llm.generate({ prompt: prompt });
+                    Logger.detailed(response);
 
                     const graph = JSON.parse(response.text);
                     const graphPath = `./graph/${IdUtil.generate()}.json`;
 
-                    this.fileUtil.saveJSON(graphPath, {
-                        file: source,
-                        graph
-                    });
+                    this.fileUtil.saveJSON(graphPath, { file: source, graph });
 
-                    return {
-                        graphPath,
-                        file: source,
-                        graph
-                    };
+                    return { graphPath, file: source, graph };
                 })
             );
 

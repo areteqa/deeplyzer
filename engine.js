@@ -8,6 +8,10 @@ const Logger = require('./utils/logger');
 const globals = require("./globals");
 
 class Engine {
+    constructor(){
+        Logger.init();
+    }
+
     async run() {
         try {
             Logger.essential("[ENGINE] Starting Deeplyzer...");

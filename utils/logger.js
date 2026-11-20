@@ -11,17 +11,18 @@ class Logger {
     DETAILED: 3
   };
 
-  static currentLevel = Logger.LEVELS.NONE;
+  static currentLevel = Logger.LEVELS.DETAILED;
   static logPath = null;
 
   static init() {
-    this.logPath = globals.log_path;
+    this.logPath = globals.config.log_path;
+    console.log(this.logPath);
 
     if (!this.logPath) return;
 
     const envLevel = globals.log_level;
 
-    this.currentLevel = Logger.LEVELS[envLevel] ?? Logger.LEVELS.NONE;
+    this.currentLevel = Logger.LEVELS[envLevel] ?? Logger.LEVELS.DETAILED;
 
     fs.mkdirSync(this.logPath, { recursive: true });
   }
@@ -67,16 +68,14 @@ class Logger {
   }
 
   static _logToFile(logLine) {
-    const logFilePath = path.join(
-      this.logPath,
-      Logger._getLogFileName()
-    );
+    try {
+      const logFilePath = path.join(this.logPath, Logger._getLogFileName());
 
-    fs.appendFile(logFilePath, logLine, err => {
-      if (err) {
-        console.error('Failed to write log:', err);
-      }
-    });
+      fs.appendFileSync(logFilePath, logLine, 'utf8');
+
+    } catch (err) {
+      console.error('Failed to write log:', err);
+    }
   }
 
   static _getLogFileName() {
@@ -88,7 +87,7 @@ class Logger {
       day: '2-digit'
     }).replace(/ /g, '-');
 
-    return `log_${formatted}.log`;
+    return `logs-${formatted}.log`;
   }
 }
 

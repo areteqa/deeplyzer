@@ -1,6 +1,6 @@
-const LLM = require('../../llm/llm');
-const FileUtil = require('../../utils/fileUtil');
-const globals = require("../../globals");
+const LLM = require('../../../llm/llm');
+const FileUtil = require('../../../utils/fileUtil');
+const globals = require("../../../globals");
 
 class BuildCode {
     constructor(){

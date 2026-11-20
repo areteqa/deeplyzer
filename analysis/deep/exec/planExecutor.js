@@ -1,6 +1,6 @@
 const BuildCode = require('./buildCode');
 const ExecCommand = require('./execCommand');
-const IdUtil = require('../../utils/idUtil');
+const IdUtil = require('../../../utils/idUtil');
 
 class PlanExecutor {
     constructor(config) {

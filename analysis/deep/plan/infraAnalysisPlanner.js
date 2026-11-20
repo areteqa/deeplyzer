@@ -1,6 +1,6 @@
-const PromptsUtil = require('../../utils/promptsUtil');
-const LLM = require('../../llm/llm');
-const globals = require("../../globals");
+const PromptsUtil = require('../../../utils/promptsUtil');
+const LLM = require('../../../llm/llm');
+const globals = require("../../../globals");
 
 class InfraAnalysisPlanner {
     constructor(graphs) {
