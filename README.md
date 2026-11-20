@@ -64,7 +64,7 @@ Deeplyzer goes further. It understands how the application works, investigates t
 
 ## How Deeplyzer Works
 
-![Deeplyzer Workflow](img/a_clean_infographic_on_white_background_a_horizon.png)
+![Deeplyzer Workflow](img/workflow.png)
 
 ## Installation
 
@@ -107,6 +107,11 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 | `batch_size` | No | `10` | Number of sources processed in each batch. |
 
 **Note:** `build_graph`, `static_analysis`, and `batch_size` are optional. If omitted, their default values are used.
+
+## Links
+
+- **GitHub Repository:** [github.com/areteqa/deeplyzer](https://github.com/areteqa/deeplyzer)
+- **NPM Package:** [npmjs.com/package/deeplyzer](https://www.npmjs.com/package/deeplyzer)
 
 ## License
 

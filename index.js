@@ -1,13 +1,14 @@
 
 const Engine = require("./engine");
+const globals = require("./globals");
 const fs = require("fs");
 const path = require("path");
 
 (async () => {
     try {
-        const config = _loadConfig();
+        globals.config = _loadConfig();
 
-        const engine = new Engine(config);
+        const engine = new Engine();
 
         await engine.run();
 

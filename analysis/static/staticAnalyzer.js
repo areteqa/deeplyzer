@@ -1,12 +1,12 @@
-const FileUtil = require('../utils/fileUtil');
-const LLM = require("../llm/llm");
-const PromptsUtil = require('../utils/promptsUtil');
+const FileUtil = require('../../utils/fileUtil');
+const LLM = require("../../llm/llm");
+const PromptsUtil = require('../../utils/promptsUtil');
+const globals = require("../../globals");
 
-class StaticAnalyzerService {
-    constructor(config) {
-        this.config = config;
+class StaticAnalyzer {
+    constructor() {
         this.fileUtil = new FileUtil();
-        this.llm = new LLM(config.llm);
+        this.llm = new LLM(globals.config.llm);
     }
 
     async analyze(graphs, workflows) {
@@ -81,4 +81,4 @@ ${item.source}
     }
 }
 
-module.exports = StaticAnalyzerService;
+module.exports = StaticAnalyzer;

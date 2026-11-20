@@ -1,12 +1,13 @@
 const GraphService = require('./services/graphService');
 const WorkflowService = require('./services/workflowService');
-const StaticAnalyzerService = require('./services/staticAnalyzerService');
+const StaticAnalyzer = require('./analysis/static/staticAnalyzer');
 
-const DeepAnalysisOrchestrator = require('./deepAnalysis/orchestrator');
+const DeepAnalysisOrchestrator = require('./analysis/deep/orchestrator');
+
+const globals = require("./globals");
 
 class Engine {
-    constructor(config = {}) {
-        this.config = config;
+    constructor() {
     }
 
     async run() {
@@ -16,8 +17,8 @@ class Engine {
 
             // step 1: build graph
             let graphs;
-            const graphService = new GraphService(this.config);
-            if (this.config.build_graph ?? true) {
+            const graphService = new GraphService();
+            if (globals.config.build_graph ?? true) {
                 graphs = await graphService.buildGraphs();
             } else {
                 graphs = await graphService.loadGraphs();
@@ -29,15 +30,18 @@ class Engine {
             const workflows = workflowService.build(graphs);
 
             // step 3: perform static code analysis
-            if (this.config.static_analysis ?? true) {
-                const staticAnalyzerService = new StaticAnalyzerService(this.config);
-                await staticAnalyzerService.analyze(graphs, workflows);
+            if (globals.config.static_analysis ?? true) {
+                const staticAnalyzer = new StaticAnalyzer();
+                await staticAnalyzer.analyze(graphs, workflows);
             }
 
-            console.log("[ENGINE] Starting deep analysis...");
-            const orchestrator = new DeepAnalysisOrchestrator(this.config);
-            //await orchestrator.analyzeWorkflows(null);
-            await orchestrator.analyzeInfra(graphs);
+            // step 4: perform deep code analysis
+            if (globals.config.deep_analysis ?? true) {
+                console.log("[ENGINE] Starting deep analysis...");
+                const orchestrator = new DeepAnalysisOrchestrator();
+                //await orchestrator.analyzeWorkflows(null);
+                await orchestrator.analyzeInfra(graphs);
+            }
 
             console.log("[ENGINE] Execution completed.");
         } catch (error) {

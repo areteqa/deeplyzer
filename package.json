@@ -14,7 +14,7 @@
     "edge-case-discovery"
   ],
   "author": "AreteQA",
-  "license": "GPL-3.0-only",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.21.1"
   }

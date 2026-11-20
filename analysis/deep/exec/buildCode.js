@@ -1,9 +1,10 @@
 const LLM = require('../../llm/llm');
 const FileUtil = require('../../utils/fileUtil');
+const globals = require("../../globals");
 
 class BuildCode {
-    constructor(config){
-        this.llm = new LLM(config.llm);
+    constructor(){
+        this.llm = new LLM(globals.config.llm);
         this.fileUtil = new FileUtil();
     }
 

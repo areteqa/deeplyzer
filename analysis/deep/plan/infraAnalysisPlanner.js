@@ -1,11 +1,12 @@
 const PromptsUtil = require('../../utils/promptsUtil');
 const LLM = require('../../llm/llm');
+const globals = require("../../globals");
 
 class InfraAnalysisPlanner {
-    constructor(graphs, config) {
+    constructor(graphs) {
         this.graphs = graphs;
         
-        this.llm = new LLM(config.llm);
+        this.llm = new LLM(globals.config.llm);
     }
 
     async plan(existingPlan, existingResponses) {

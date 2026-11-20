@@ -2,16 +2,16 @@ const FileUtil = require('../utils/fileUtil');
 const IdUtil = require('../utils/idUtil');
 const LLM = require("../llm/llm");
 const PromptsUtil = require('../utils/promptsUtil');
+const globals = require("../globals");
 const path = require("path");
 
 class GraphService {
-    constructor(config) {
-        this.config = config;
+    constructor() {
         this.fileUtil = new FileUtil();
-        this.llm = new LLM(config.llm);
+        this.llm = new LLM(globals.config.llm);
         this.graphs = [];
 
-        this.batchSize = config.batch_size ?? 10;
+        this.batchSize = globals.config.batch_size ?? 10;
     }
 
     async buildGraphs() {
@@ -52,8 +52,8 @@ class GraphService {
     }
 
     async _buildNodes() {
-        const sourceFiles = this.config.sources;
-        const exclusions = this.config["source-exclusions"];
+        const sourceFiles = globals.config.sources;
+        const exclusions = globals.config["source-exclusions"];
 
         this.sources = this.fileUtil.readPaths(sourceFiles, exclusions);
 
