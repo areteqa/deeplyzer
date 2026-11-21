@@ -89,9 +89,12 @@ class SessionManager {
             throw new Error(`Invalid stage: ${stage}`);
         }
 
-        return this.session.stages.some(
-            completedStage => this.STAGES.indexOf(completedStage) >= stageIndex
+        const lastCompletedIndex = Math.max(
+            ...this.session.stages.map(s => this.STAGES.indexOf(s)),
+            -1
         );
+
+        return stageIndex > lastCompletedIndex;
     }
 
     static _writeSession() {

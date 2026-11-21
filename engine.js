@@ -19,6 +19,7 @@ class Engine {
         try {
             Logger.essential("[ENGINE] Starting Deeplyzer...");
             Logger.essential("[ENGINE] Configuration loaded.");
+            SessionManager.updateSession({ status: SessionManager.STATUS.IN_PROGRESS });
 
             // step 1: build graph
             let graphs;
@@ -35,7 +36,7 @@ class Engine {
             if(SessionManager.checkStage("build_workflows")) {
                 workflows = this.workflowService.build(graphs);
 
-                SessionManager.updateSession("build_workflows");
+                SessionManager.updateSession({ stages: ["build_workflows"] });
             }
 
             if(!workflows) {
@@ -47,7 +48,7 @@ class Engine {
                 if (globals.config.static_analysis ?? true) {
                     await this.staticAnalyzer.analyze(graphs, workflows);
 
-                    SessionManager.updateSession("static_analysis");
+                    SessionManager.updateSession({ stages: ["static_analysis"] });
                 }
             }
 
@@ -58,10 +59,11 @@ class Engine {
                     //await orchestrator.analyzeWorkflows(null);
                     await this.orchestrator.analyzeInfra(graphs);
 
-                    SessionManager.updateSession("deep_analysis");
+                    SessionManager.updateSession({ stages: ["deep_analysis"] });
                 }
             }
 
+            SessionManager.updateSession({ status: SessionManager.STATUS.COMPLETED });
             Logger.essential("[ENGINE] Execution completed.");
         } catch (error) {
             Logger.error("[ENGINE ERROR]", error);

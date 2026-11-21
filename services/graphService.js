@@ -24,14 +24,14 @@ class GraphService {
             Logger.essential("Building nodes is in-progress");
             await this._buildNodes();
 
-            SessionManager.updateSession("build_nodes");
+            SessionManager.updateSession({ stages: ["build_nodes"] });
         }
 
         if(SessionManager.checkStage("connect_edges")) {
             Logger.essential("Connecting edges");
             await this._buildExternalEdges();
 
-            SessionManager.updateSession("connect_edges");
+            SessionManager.updateSession({ stages: ["connect_edges"] });
         }
     }
 
