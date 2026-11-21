@@ -14,7 +14,10 @@ class SessionManager {
     static STAGES = {
         NONE: "none",
         BUILD_NODES: "build_nodes",
-        CONNECT_EDGES: "connect_edges"
+        CONNECT_EDGES: "connect_edges",
+        BUILD_WORKFLOWS: "build_workflows",
+        STATIC_ANALYSIS: "static_analysis",
+        DEEP_ANALYSIS: "deep_analysis",
     };
 
     static session = null;
@@ -73,6 +76,22 @@ class SessionManager {
 
         this._writeSession();
         return this.session;
+    }
+
+    static checkStage(stage) {
+        if (!this.session) {
+            this.loadSession();
+        }
+
+        const stageIndex = this.STAGES.indexOf(stage);
+
+        if (stageIndex === -1) {
+            throw new Error(`Invalid stage: ${stage}`);
+        }
+
+        return this.session.stages.some(
+            completedStage => this.STAGES.indexOf(completedStage) >= stageIndex
+        );
     }
 
     static _writeSession() {

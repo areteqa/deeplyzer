@@ -1,9 +1,14 @@
+const fs = require("fs");
+const path = require("path");
+
 class WorkflowService {
+
+    static baseDir = path.join(process.cwd(), ".deeplyzer");
+    static workflowFile = path.join(WorkflowService.baseDir, "workflows.json");
 
     build(graphs = []) {
         const functionNodeIds = new Set();
 
-        // Collect function node IDs across all graphs
         for (const graph of graphs) {
             const nodes = graph.graph?.nodes || [];
 
@@ -14,7 +19,6 @@ class WorkflowService {
             }
         }
 
-        // Initialize workflow entries for every function node
         const workflowMap = new Map();
 
         for (const nodeId of functionNodeIds) {
@@ -24,7 +28,6 @@ class WorkflowService {
             });
         }
 
-        // Build connections from edges in both directions
         for (const graph of graphs) {
             const edges = graph.graph?.edges || [];
 
@@ -40,7 +43,35 @@ class WorkflowService {
             }
         }
 
-        return [...workflowMap.values()];
+        const workflows = [...workflowMap.values()];
+
+        this._saveWorkflows(workflows);
+
+        return workflows;
+    }
+
+    loadWorkflows() {
+        if (!fs.existsSync(WorkflowService.workflowFile)) {
+            return [];
+        }
+
+        try {
+            return JSON.parse(
+                fs.readFileSync(WorkflowService.workflowFile, "utf8")
+            );
+        } catch (error) {
+            throw new Error(`Failed to load workflows: ${error.message}`);
+        }
+    }
+
+    _saveWorkflows(workflows) {
+        fs.mkdirSync(WorkflowService.baseDir, { recursive: true });
+
+        fs.writeFileSync(
+            WorkflowService.workflowFile,
+            JSON.stringify(workflows, null, 4),
+            "utf8"
+        );
     }
 
     _addConnection(workflowMap, source, target) {
@@ -50,7 +81,6 @@ class WorkflowService {
             childNodes.push(target);
         }
     }
-
 }
 
 module.exports = WorkflowService;

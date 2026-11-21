@@ -1,3 +1,4 @@
+const SessionManager = require('../session/sessionManager');
 const FileUtil = require('../utils/fileUtil');
 const IdUtil = require('../utils/idUtil');
 const LLM = require("../llm/llm");
@@ -19,11 +20,19 @@ class GraphService {
         Logger.essential("Finding source exclusions");
         await this._identifyExclusions();
 
-        Logger.essential("Building nodes is in-progress");
-        await this._buildNodes();
+        if(SessionManager.checkStage("build_nodes")) {
+            Logger.essential("Building nodes is in-progress");
+            await this._buildNodes();
 
-        Logger.essential("Connecting edges");
-        await this._buildExternalEdges();
+            SessionManager.updateSession("build_nodes");
+        }
+
+        if(SessionManager.checkStage("connect_edges")) {
+            Logger.essential("Connecting edges");
+            await this._buildExternalEdges();
+
+            SessionManager.updateSession("connect_edges");
+        }
     }
 
     async _identifyExclusions() {
