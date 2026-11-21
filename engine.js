@@ -6,12 +6,9 @@ const DeepAnalysisOrchestrator = require('./analysis/deep/orchestrator');
 
 const Logger = require('./utils/logger');
 const globals = require("./globals");
+const SessionManager = require("./session/sessionManager");
 
 class Engine {
-    constructor(){
-        Logger.init();
-    }
-
     async run() {
         try {
             Logger.essential("[ENGINE] Starting Deeplyzer...");

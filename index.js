@@ -1,12 +1,27 @@
-
 const Engine = require("./engine");
+const SessionManager = require("./session/sessionManager");
+const Logger = require('./utils/logger');
 const globals = require("./globals");
 const fs = require("fs");
 const path = require("path");
 
 (async () => {
-    try {
-        globals.config = _loadConfig();
+    try {    
+        const argument = process.argv[2];
+
+        // Handle commands
+        if (argument === "clear-session") {
+            SessionManager.clearSession();
+            console.log("[INFO] Session cleared successfully.");
+            return;
+        }
+
+        // Normal execution
+        SessionManager.loadSession();
+
+        globals.config = _loadConfig(argument);
+
+        Logger.init();
 
         const engine = new Engine();
 
@@ -18,11 +33,15 @@ const path = require("path");
     }
 })();
 
-function _loadConfig() {
-    const configPath = process.argv[2];
+function _loadConfig(configPath) {
 
     if (!configPath) {
-        throw new Error("Configuration file path is required.\nUsage: node index.js <config.json>");
+        throw new Error(
+            "Configuration file path or command is required.\n" +
+            "Usage:\n" +
+            "  node index.js <config.json>\n" +
+            "  node index.js clear-session"
+        );
     }
 
     const resolvedPath = path.resolve(configPath);
