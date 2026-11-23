@@ -39,7 +39,7 @@ class GraphService {
         const sources = this.fileUtil.readPaths(globals.config.sources, globals.config["source_exclusions"]);
         const folders = [...new Set(sources.map(source => path.dirname(source.path)))];
 
-        let prompt = PromptsUtil.read("source_exclusions");
+        let prompt = PromptsUtil.read("graph.source_exclusions");
         prompt = prompt.replaceAll("***PATHS***", JSON.stringify(folders));
         Logger.detailed(prompt);
 
@@ -92,7 +92,7 @@ class GraphService {
 
             const results = await Promise.all(
                 batch.map(async (source) => {
-                    let prompt = PromptsUtil.read("build_nodes");
+                    let prompt = PromptsUtil.read("graph.build_nodes");
 
                     prompt = prompt.replaceAll("***CONTENT***", JSON.stringify(source.content));
                     prompt = prompt.replaceAll("ID-PREFIX", IdUtil.generate());
@@ -144,7 +144,7 @@ class GraphService {
                                 source: this._getNodeSource(candidate.file, candidate)
                             }));
 
-                            let prompt = PromptsUtil.read("resolve_edges");
+                            let prompt = PromptsUtil.read("graph.resolve_edges");
 
                             prompt = prompt.replaceAll(
                                 "***SOURCE_NODE***",

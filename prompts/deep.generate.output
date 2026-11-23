@@ -1,0 +1,25 @@
+Generate all required files and return them as a JSON array.
+
+Each array element must contain exactly two fields:
+
+- `filename`: File name including extension.
+- `content`: Complete source code or content of the file.
+
+Requirements:
+1. Generate complete file contents, not descriptions, summaries, or pseudocode.
+2. Preserve proper formatting, indentation, and line breaks.
+3. Escape special characters correctly to ensure valid JSON.
+4. Do not include Markdown code fences inside file content.
+5. Generate a separate array element for each file.
+6. Do not include directory paths in filenames.
+7. If no files need to be generated, return an empty array.
+8. Do not include any explanatory text before or after the JSON.
+
+**Output format:**
+
+[
+  {
+    "filename": "example.py",
+    "content": "Complete source code of the file"
+  }
+]

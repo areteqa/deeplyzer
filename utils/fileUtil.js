@@ -25,8 +25,8 @@ class FileUtil {
         const savedFiles = [];
 
         for (const file of files) {
-            if (!file || typeof file.filename !== "string" || typeof file.source !== "string") {
-                throw new Error("Invalid file. Expected filename and source strings.");
+            if (!file || typeof file.filename !== "string" || typeof file.content !== "string") {
+                throw new Error("Invalid file. Expected filename and content strings.");
             }
 
             const filename = path.basename(file.filename);
@@ -38,7 +38,7 @@ class FileUtil {
             let destination = path.resolve(root, filename);
 
             try {
-                fs.writeFileSync(destination, file.source, {
+                fs.writeFileSync(destination, file.content, {
                     encoding: "utf8",
                     flag: "wx"
                 });

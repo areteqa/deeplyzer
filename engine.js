@@ -1,7 +1,7 @@
 const GraphService = require('./services/graphService');
 const WorkflowService = require('./services/workflowService');
 const StaticAnalyzer = require('./analysis/static/staticAnalyzer');
-const DeepAnalysisOrchestrator = require('./analysis/deep/orchestrator');
+const OrchestratorAgent = require('./analysis/deep/orchestratorAgent');
 
 const Logger = require('./utils/logger');
 const globals = require("./globals");
@@ -12,13 +12,17 @@ class Engine {
         this.graphService = new GraphService();
         this.workflowService = new WorkflowService(); 
         this.staticAnalyzer = new StaticAnalyzer();
-        this.orchestrator = new DeepAnalysisOrchestrator();
+
+        this.orchestratorAgent = new OrchestratorAgent();
     }
 
     async run() {
+globals.graphs = await this.graphService.loadGraphs();
+await this.orchestratorAgent.start();
+return;
+        
         try {
             Logger.essential("[ENGINE] Starting Deeplyzer...");
-            Logger.essential("[ENGINE] Configuration loaded.");
             SessionManager.updateSession({ status: SessionManager.STATUS.IN_PROGRESS });
 
             // step 1: build graph
@@ -56,9 +60,8 @@ class Engine {
             if (SessionManager.checkStage("deep_analysis")) {
                 if (globals.config.deep_analysis ?? true) {
                     Logger.essential("[ENGINE] Starting deep analysis...");
-                    //await orchestrator.analyzeWorkflows(null);
-                    await this.orchestrator.analyzeInfra(graphs);
-
+                    this.orchestrator.start();
+                    
                     SessionManager.updateSession({ stages: ["deep_analysis"] });
                 }
             }

@@ -1,5 +1,6 @@
 const globals = {
-  config: {}
+  config: {},
+  graphs: null,
 };
 
 module.exports = globals;

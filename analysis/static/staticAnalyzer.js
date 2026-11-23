@@ -18,7 +18,7 @@ class StaticAnalyzer {
 
             if (!source.trim()) continue;
 
-            let prompt = PromptsUtil.read("static_analysis");
+            let prompt = PromptsUtil.read("static.analyse");
             prompt = prompt.replaceAll("***SOURCE_CODE***", source);
             Logger.detailed(prompt);
 

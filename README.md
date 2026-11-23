@@ -1,3 +1,4 @@
+![Deeplyzer Logo](img/logo.png)
 # Deeplyzer
 
 ### Deep analysis of software beyond static code analysis.

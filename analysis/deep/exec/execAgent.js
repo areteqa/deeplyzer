@@ -1,34 +1,15 @@
-
 const path = require("path");
 const { exec } = require("child_process");
 const util = require("util");
 const fs = require("fs");
 
-class ExecCommand {
+class ExecAgent {
     constructor() {
         this.baseDir = path.join(process.cwd(), ".deeplyzer");
         this.execAsync = util.promisify(exec);
 
         this.platform = process.platform;
-        this.shell = this.getShell();
-    }
-
-    getShell() {
-        switch (this.platform) {
-            case "win32":
-                return "powershell.exe";
-
-            case "darwin":
-                return "/bin/zsh";
-
-            case "linux":
-                return "/bin/bash";
-
-            default:
-                throw new Error(
-                    `Unsupported operating system: ${this.platform}`
-                );
-        }
+        this.shell = this._getShell();
     }
 
     async exec(command, id) {
@@ -48,7 +29,6 @@ class ExecCommand {
             if (stderr) process.stderr.write(stderr);
 
             return { success: true, stdout, stderr };
-
         } catch (error) {
             console.error(`[COMMAND ERROR] ${error.message}`);
 
@@ -60,6 +40,22 @@ class ExecCommand {
             };
         }
     }
+
+    _getShell() {
+        switch (this.platform) {
+            case "win32":
+                return "powershell.exe";
+
+            case "darwin":
+                return "/bin/zsh";
+
+            case "linux":
+                return "/bin/bash";
+
+            default:
+                throw new Error(`Unsupported operating system: ${this.platform}`);
+        }
+    }
 }
 
-module.exports = ExecCommand;
+module.exports = ExecAgent;

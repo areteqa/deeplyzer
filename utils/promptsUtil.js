@@ -16,7 +16,7 @@ class PromptsUtil {
 
             return (
                 fs.statSync(filePath).isFile() &&
-                path.parse(file).name === name
+                path.parse(file).base === name
             );
         });
 
