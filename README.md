@@ -84,11 +84,13 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
   "sources": [],
   "source_exclusions": [],
   "llm": {
-    "provider": "openai",
+    "provider": "openai | gemini | claude",
     "model": "gpt-6.1-sol",
     "apiKey": "<API key goes here>"
   },
+  "log_path": "C:\\deeplyzer\\.logs",  
   "build_graph": false,
+  "deep_analysis": true,
   "static_analysis": false,
   "batch_size": 10
 }
@@ -104,8 +106,10 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 | `llm.model` | Yes | - | Model to use for analysis. |
 | `llm.apiKey` | Yes | - | API key for the selected LLM provider. |
 | `build_graph` | No | `true` | Build semantic code graphs. |
+| `deep_analysis` | No | true | Enable deep LLM-based analysis. |
 | `static_analysis` | No | `true` | Enable static code analysis. |
 | `batch_size` | No | `10` | Number of sources processed in each batch. |
+| `log_path` | No | - | Directory where analysis logs are written. |
 
 **Note:** `build_graph`, `static_analysis`, and `batch_size` are optional. If omitted, their default values are used.
 
