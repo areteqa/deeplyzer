@@ -9,12 +9,11 @@ class PlanAgent {
 
         this.stage = "none"; // current stage
         this.stages = [];
-        this.planAction;
-        
+
         this.environment = ""; // current environment
         this.environments = [];
-
-        this.decisions = [];
+        
+        this.discoveries;
     }
 
     async plan(assessments) {
@@ -22,26 +21,11 @@ class PlanAgent {
             await this._init();
         }
 
-        await this._decideStage(assessments);
+        await this._decideStageAndTasks(assessments);
 
         if(!this.stage == "none" || this.stage == "complete") return null;
 
         let plans = await this._generatePlans(this.stage, assessments);
-
-        return plans;
-    }
-
-    async _generatePlans() {
-        // prompt for prompt, sequence, formatted output
-        const outputPrompt = PromptsUtil.read("deep.plan.output");
-
-        const prompt = this.planAction + "\n\n" + outputPrompt;
-
-        const response = await this.llm.generate({ prompt: prompt, text: true });
-        Logger.detailed("Generated Plans: " + response);
-
-        let plans = JSON.parse(response);
-        plans = Array.isArray(plans) ? plans : [plans];
 
         return plans;
     }
@@ -52,7 +36,7 @@ class PlanAgent {
 
         let prompt = PromptsUtil.read("deep.plan.init");
         prompt = prompt.replaceAll("***FILES***", files);
-        //Logger.detailed("Init Planning: " + prompt);
+        Logger.detailed("Init Planning: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, text: true });
         Logger.detailed("Stages Generated: " + response);
@@ -60,19 +44,34 @@ class PlanAgent {
         this.stages = JSON.parse(response);
     }
 
-    async _decideStage(assessments) {
+    async _decideStageAndTasks(assessments) {
         let prompt = PromptsUtil.read("deep.plan.stage");
         prompt = prompt.replaceAll("***ASSESSMENTS***", assessments);
         prompt = prompt.replaceAll("***STAGE***", this.stage);
         prompt = prompt.replaceAll("***STAGES***", JSON.stringify(this.stages));
-        //Logger.detailed(prompt);
+        Logger.detailed(prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
         Logger.detailed("Selected Stage: " + JSON.stringify(response));
 
         this.stage = response.stage;
-        this.planAction = response.actions;
-        this.decisions.push(response.rationale);
+        this.discoveries = response.discovery;
+    }
+
+    async _generatePlans() {
+        // prompt for prompt, sequence, formatted output
+        let outputPrompt = PromptsUtil.read("deep.plan.output");
+        outputPrompt = outputPrompt.replaceAll("***OS***", process.platform);
+
+        const prompt = JSON.stringify(this.discoveries) + "\n\n" + outputPrompt;
+
+        const response = await this.llm.generate({ prompt: prompt, text: true });
+        Logger.detailed("Generated Plans: " + response);
+
+        let plans = JSON.parse(response);
+        plans = Array.isArray(plans) ? plans : [plans];
+
+        return plans;
     }
 }
 
