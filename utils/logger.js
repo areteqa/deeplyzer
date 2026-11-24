@@ -16,7 +16,6 @@ class Logger {
 
   static init() {
     this.logPath = globals.config.log_path;
-    console.log(this.logPath);
 
     if (!this.logPath) return;
 

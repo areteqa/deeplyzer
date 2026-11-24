@@ -11,11 +11,13 @@ class AssessAgent {
     async assess(results) {
         let prompt = PromptsUtil.read("deep.assess");
 
-        prompt = prompt.replaceAll("***RESULTS***", results);
-        Logger.detailed(prompt);
+        prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(results));
+        //Logger.detailed(prompt);
 
         const response = await this.llm.generate({ prompt: prompt, text: true });
         Logger.detailed(response);
+
+        return response;
     }
 }
 

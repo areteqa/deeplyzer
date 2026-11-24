@@ -25,7 +25,7 @@ class PlanAgent {
 
         if(!this.stage == "none" || this.stage == "complete") return null;
 
-        let plans = await this._generatePlans(this.stage, assessments);
+        let plans = await this._generatePlans(assessments);
 
         return plans;
     }
@@ -36,7 +36,7 @@ class PlanAgent {
 
         let prompt = PromptsUtil.read("deep.plan.init");
         prompt = prompt.replaceAll("***FILES***", files);
-        Logger.detailed("Init Planning: " + prompt);
+        //Logger.detailed("Init Planning: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, text: true });
         Logger.detailed("Stages Generated: " + response);
@@ -49,7 +49,7 @@ class PlanAgent {
         prompt = prompt.replaceAll("***ASSESSMENTS***", assessments);
         prompt = prompt.replaceAll("***STAGE***", this.stage);
         prompt = prompt.replaceAll("***STAGES***", JSON.stringify(this.stages));
-        Logger.detailed(prompt);
+        //Logger.detailed(prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
         Logger.detailed("Selected Stage: " + JSON.stringify(response));
@@ -58,10 +58,11 @@ class PlanAgent {
         this.discoveries = response.discovery;
     }
 
-    async _generatePlans() {
+    async _generatePlans(assessments) {
         // prompt for prompt, sequence, formatted output
         let outputPrompt = PromptsUtil.read("deep.plan.output");
         outputPrompt = outputPrompt.replaceAll("***OS***", process.platform);
+        outputPrompt = outputPrompt.replaceAll("***ASSESSMENTS***", assessments);
 
         const prompt = JSON.stringify(this.discoveries) + "\n\n" + outputPrompt;
 
