@@ -1,12 +1,15 @@
 {
   "name": "deeplyzer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Go beyond static code analysis. End-to-end intelligence across code, execution flows, databases, and cloud infrastructure.",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "start": "node index.js"
   },
+  "files": [
+    "!packages/**"
+  ],
   "keywords": [
     "ai",
     "autonomous-testing",
