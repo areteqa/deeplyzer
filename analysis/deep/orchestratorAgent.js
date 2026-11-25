@@ -29,8 +29,8 @@ class OrchestratorAgent {
             }
 
             switch(setup.environment.package.type) {
-                case "external":
-                    await this._runExternalWorkflow(workflow);
+                case "dynamic":
+                    await this._runDynamicWorkflow(workflow);
                     break;
                 case "open":
                     await this._runOpenPackageWorkflow(workflow, setup.environment);
@@ -39,7 +39,7 @@ class OrchestratorAgent {
         }        
     }
 
-    async _runExternalWorkflow(workflow) {
+    async _runDynamicWorkflow(workflow) {
         let plans, results = [], assessments;
         results = [];
 

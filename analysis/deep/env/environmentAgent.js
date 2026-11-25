@@ -19,8 +19,8 @@ class EnvironmentAgent {
 
             for (let attempts = 0; attempts < 3; attempts++) {
                 switch (environment.package.type) {
-                    case "external":
-                        results = await this._setupExternal(environment.setupDetails, results);
+                    case "dynamic":
+                        results = await this._setupDynamic(environment.setupDetails, results);
                         break;
 
                     case "open":
@@ -48,11 +48,11 @@ class EnvironmentAgent {
         }
     }
 
-    async _setupExternal(setupDetails, existingResults) {
-        let prompt = PromptsUtil.read("deep.env.external");
+    async _setupDynamic(setupDetails, existingResults) {
+        let prompt = PromptsUtil.read("deep.env.dynamic");
         prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
         prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(existingResults ?? "NONE"));
-        Logger.detailed("Setup external details: " + prompt);
+        Logger.detailed("Setup dynamic details: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
         Logger.detailed("Commands Generated: " + JSON.stringify(response));
@@ -85,7 +85,7 @@ class EnvironmentAgent {
         let prompt = PromptsUtil.read("deep.env.assess");
         prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
         prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(results ?? "NONE"));
-        Logger.detailed("Setup external details: " + prompt);
+        Logger.detailed("Setup dynamic details: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, text: true });
         Logger.detailed("Setup Exit: " + response);
