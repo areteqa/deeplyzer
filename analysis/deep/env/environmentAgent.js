@@ -24,7 +24,7 @@ class EnvironmentAgent {
                         break;
 
                     case "open":
-                        results = await this._setupOpen(environment.name, results);
+                        results = await this._setupOpen(environment.name, environment.installations);
                         break;
 
                     default:
@@ -48,6 +48,26 @@ class EnvironmentAgent {
         }
     }
 
+    async _setupOpen(packageName, installations) {
+        const results = [];
+
+        const installResult = await execUtil.installPackage(packageName);
+        results.push(installResult);
+
+        if (installResult.success) {
+            const loadResult = await execUtil.loadPackage(packageName);
+            results.push(loadResult);
+        }
+
+        if(installations && installations.length > 0) {
+            for(const installation of installations) {
+                await execUtil.exec(installation);
+            }
+        }
+
+        return results;
+    }
+
     async _setupDynamic(setupDetails, existingResults) {
         let prompt = PromptsUtil.read("deep.env.dynamic");
         prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
@@ -62,20 +82,6 @@ class EnvironmentAgent {
             const result = await execUtil.exec(command);
 
             results.push(result);
-        }
-
-        return results;
-    }
-
-    async _setupOpen(packageName) {
-        const results = [];
-
-        const installResult = await execUtil.installPackage(packageName);
-        results.push(installResult);
-
-        if (installResult.success) {
-            const loadResult = await execUtil.loadPackage(packageName);
-            results.push(loadResult);
         }
 
         return results;
