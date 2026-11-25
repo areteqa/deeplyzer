@@ -1,0 +1,74 @@
+Analyze the supplied file object and available open package definitions. Identify the most suitable execution environment.
+
+- If an existing open package matches the file's requirements, select it and populate its package details.
+- Otherwise, define a dynamic environment with the required runtime.
+
+Return ONLY valid JSON using the following format.
+
+**Format:**
+
+{
+  "environments": [
+    {
+      "name": "environment name",
+      "package": {
+        "type": "dynamic | open",
+        "name": "package name (open only)",
+        "initClass": "initialization class (open only)",
+        "installations": ["installation commands (open only)"]
+      },
+      "setupDetails": "Runtime or environment setup requirements"
+    }
+  ]
+}
+
+**Example — Dynamic environment:**
+
+{
+  "environments": [
+    {
+      "name": "python",
+      "package": {
+        "type": "dynamic"
+      },
+      "setupDetails": "python runtime"
+    }
+  ]
+}
+
+**Example — Open package:**
+
+{
+  "environments": [
+    {
+      "name": "deeplyzer-web-engine",
+      "package": {
+        "type": "open",
+        "name": "deeplyzer-web-engine",
+        "initClass": "DeeplyzerWebEngine",
+        "installations": [
+          "npm install playwright",
+          "npx playwright install chromium"
+        ]
+      },
+      "setupDetails": ""
+    }
+  ]
+}
+
+**Rules:**
+
+1. Use `"type": "open"` when selecting an existing package. Copy its name, initClass, and installations exactly.
+2. Use `"type": "dynamic"` when no suitable open package exists. Specify the required runtime in setupDetails.
+3. The `installations` field must exist only for open packages.
+4. The `name`, `initClass`, and `installations` fields must exist only for open packages.
+5. For open packages, keep setupDetails empty.
+6. Select the simplest suitable environment.
+7. Do not invent package definitions or installation commands.
+8. Return only valid JSON. Do not include explanations or Markdown.
+
+**FILES**
+***FILES***
+
+**OPEN PACKAGE DEFINITIONS**
+***OPEN_PACKAGES***

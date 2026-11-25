@@ -1,5 +1,6 @@
 const GraphService = require('./services/graphService');
 const WorkflowService = require('./services/workflowService');
+const EnvironmentService = require('./services/environmentService');
 const StaticAnalyzer = require('./analysis/static/staticAnalyzer');
 const OrchestratorAgent = require('./analysis/deep/orchestratorAgent');
 
@@ -11,16 +12,13 @@ class Engine {
     constructor() {
         this.graphService = new GraphService();
         this.workflowService = new WorkflowService(); 
+        this.environmentService = new EnvironmentService();
         this.staticAnalyzer = new StaticAnalyzer();
 
         this.orchestratorAgent = new OrchestratorAgent();
     }
 
-    async run() {
-globals.graphs = await this.graphService.loadGraphs();
-await this.orchestratorAgent.start();
-return;
-        
+    async run() {        
         try {
             Logger.essential("[ENGINE] Starting Deeplyzer...");
             SessionManager.updateSession({ status: SessionManager.STATUS.IN_PROGRESS });
@@ -47,7 +45,10 @@ return;
                 workflows = this.workflowService.loadWorkflows();
             }
 
-            // step 3: perform static code analysis
+            // step 3: define environments
+            await this.environmentService.define();
+
+            // step 4: perform static code analysis
             if (SessionManager.checkStage("static_analysis")) {
                 if (globals.config.static_analysis ?? true) {
                     await this.staticAnalyzer.analyze(graphs, workflows);
