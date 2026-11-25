@@ -1,15 +1,14 @@
 const Logger = require('../../utils/logger');
 const IdUtil = require('../../utils/idUtil');
+const LLM = require('../../llm/llm');
+const globals = require('../../globals');
+const execUtil = require('../../utils/execUtil');
 
 // agents
 const EnvironmentAgent = require('./env/environmentAgent');
 const PlanAgent = require('./plan/planAgent');
 const GenerateAgent = require('./generate/ganerateAgent');
 const AssessAgent = require('./assess/assessAgent');
-
-const LLM = require('../../llm/llm');
-const globals = require('../../globals');
-const execUtil = require('../../utils/execUtil');
 
 class OrchestratorAgent {
     constructor() {
@@ -29,12 +28,12 @@ class OrchestratorAgent {
                 continue;
             }
 
-            switch(setup.environment.package) {
+            switch(setup.environment.package.type) {
                 case "external":
                     await this._runExternalWorkflow(workflow);
                     break;
                 case "open":
-                    await this._runOpenPackageWorkflow(workflow);
+                    await this._runOpenPackageWorkflow(workflow, setup.environment);
                     break;
             }
         }        
@@ -72,8 +71,8 @@ class OrchestratorAgent {
         return assessments;
     }
 
-    async _runOpenPackageWorkflow(workflow) {
-        const result = await execUtil.createInstance("deeplyzer-web-engine", "DeeplyzerWebEngine");
+    async _runOpenPackageWorkflow(workflow, environment) {
+        const result = await execUtil.createInstance(environment.package.name, environment.package.initClass);
         const instance = result.instance;
 
         instance.logger = Logger;

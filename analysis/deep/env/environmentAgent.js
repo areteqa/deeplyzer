@@ -18,7 +18,7 @@ class EnvironmentAgent {
             let results = [];
 
             for (let attempts = 0; attempts < 3; attempts++) {
-                switch (environment.package) {
+                switch (environment.package.type) {
                     case "external":
                         results = await this._setupExternal(environment.setupDetails, results);
                         break;
