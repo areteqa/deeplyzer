@@ -1,3 +1,6 @@
+**OPERATING SYSTEM:**
+***OS***
+
 Generate all required files and return them as a JSON array.
 
 Each array element must contain exactly two fields:

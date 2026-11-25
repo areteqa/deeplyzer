@@ -71,6 +71,7 @@ class EnvironmentAgent {
     async _setupDynamic(setupDetails, existingResults) {
         let prompt = PromptsUtil.read("deep.env.dynamic");
         prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
+        prompt = prompt.replaceAll("***OS***", process.platform);
         prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(existingResults ?? "NONE"));
         Logger.detailed("Setup dynamic details: " + prompt);
 

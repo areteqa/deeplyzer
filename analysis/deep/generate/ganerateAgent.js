@@ -11,7 +11,8 @@ class GenerateAgent {
     }
 
     async generate(generatePrompt, id) {
-        const outputPrompt = PromptsUtil.read("deep.generate.output");
+        let outputPrompt = PromptsUtil.read("deep.generate.output");
+        outputPrompt = outputPrompt.replaceAll("***OS***", process.platform);
 
         const prompt = generatePrompt + "\n\n" + outputPrompt;
         Logger.detailed("Generate Agent Internal Prompt: " + prompt);

@@ -30,7 +30,7 @@ class OrchestratorAgent {
 
             switch(setup.environment.package.type) {
                 case "dynamic":
-                    await this._runDynamicWorkflow(workflow);
+                    await this._runDynamicWorkflow(workflow, setup.environment.setupDetails);
                     break;
                 case "open":
                     await this._runOpenPackageWorkflow(workflow, setup.environment);
@@ -39,12 +39,11 @@ class OrchestratorAgent {
         }        
     }
 
-    async _runDynamicWorkflow(workflow) {
-        let plans, results = [], assessments;
-        results = [];
+    async _runDynamicWorkflow(workflow, environment) {
+        let results = [];
 
         // PLAN
-        plans = await this.planAgent.plan(workflow.src);
+        let plans = await this.planAgent.plan(workflow.src, environment);
 
         for (const plan of plans) {
             const id = IdUtil.generate();
@@ -64,9 +63,7 @@ class OrchestratorAgent {
         }
 
         // ASSESS
-        if (results.length > 0) {
-            assessments = await this.assessAgent.assess(results);
-        }
+        const assessments = await this.assessAgent.assess(results);
 
         return assessments;
     }
