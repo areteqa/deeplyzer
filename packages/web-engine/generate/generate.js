@@ -47,6 +47,11 @@ For each identified input:
 3. Use the element's XPath as its identifier.
 4. Avoid generating values that contradict the element's constraints or expected purpose.
 5. Generate values that are appropriate for the intended interaction.
+6. Respect HTML validation constraints such as required, min, max, maxlength, minlength, and pattern.
+7. For select elements, use an existing enabled option value.
+8. For radio buttons, use the actual value attribute of the selected option.
+9. Do not generate values for disabled or readonly inputs.
+10. Do not generate values for hidden inputs unless they are explicitly intended for user interaction.
 
 Examples:
 
@@ -62,7 +67,11 @@ Examples:
 | Select | Existing option value |
 | Textarea | Relevant sample text |
 
-Do not generate input values for elements that are not intended to accept user input.
+Additional rules:
+
+- For checkboxes, use "true" or "false" depending on the intended test scenario.
+- For radio buttons, select one appropriate option from the existing radio group. Do not generate entries for every radio option.
+- Do not invent values or options that are not supported by the supplied HTML.
 
 ## 4. ACTION IDENTIFICATION
 
@@ -82,9 +91,32 @@ Supported actions:
 
 Use the element's XPath as its identifier.
 
-Do not generate actions for decorative elements or elements without an identifiable interaction purpose.
+Do not generate actions for decorative elements, disabled elements, or elements without an identifiable interaction purpose.
 
-## 5. STEP GENERATION
+For form submissions, identify the appropriate submit button associated with the form. Do not confuse submit, reset, cancel, and other button purposes.
+
+## 5. XPATH IDENTIFICATION
+
+Use the element's XPath as its identifier for both inputs and actions.
+
+Follow these rules:
+
+1. Generate valid XPath expressions that identify actual elements in the supplied HTML.
+2. Prefer unique IDs when available.
+3. Otherwise, use relevant attributes such as name, type, value, and other identifying attributes.
+4. Use positional XPath only when necessary.
+5. Ensure XPath identifies the intended element.
+6. Do not use CSS selectors or JavaScript expressions.
+7. Do not reference elements that are not present in the supplied HTML.
+
+Examples:
+
+- //input[@id='email']
+- //input[@name='username']
+- //button[@type='submit']
+- (//input[@type='text'])[1]
+
+## 6. STEP GENERATION
 
 Generate an ordered sequence of interaction steps.
 
@@ -103,12 +135,17 @@ Rules:
 11. Do not generate unnecessary steps for elements that do not contribute to an identifiable interaction.
 12. If an action does not require any input values, generate the step with an empty 'inputs' array.
 13. If no suitable interaction exists, return an empty array.
+14. Do not combine inputs from independent forms into one step.
+15. When an action submits a form, include all relevant inputs belonging to that form in the same step.
+16. Do not assume that an action leads to a particular page or that the resulting operation succeeds.
 
-## 6. OUTPUT FORMAT
+## 7. OUTPUT FORMAT
 
 Return strictly valid JSON.
 
-The root must be an array containing sequential interaction steps.
+The root must be an object containing a 'steps' array.
+
+Each array element represents one sequential interaction step.
 
 Each step must follow this structure:
 
@@ -142,7 +179,8 @@ Each step must follow this structure:
 
 Output rules:
 
-- The root must always be an array.
+- The root must always be an object containing the 'steps' array.
+- 'steps' must always be an array.
 - Each array element represents one sequential interaction step.
 - 'inputs' must always be an array.
 - 'action' must be an object or null.
@@ -152,9 +190,28 @@ Output rules:
 - 'element' must contain a valid XPath expression.
 - All input values must be strings.
 - Do not include explanations, markdown, comments, or additional properties.
-- If no suitable interaction exists, return '[]'.
+- If no suitable interaction exists, return {"steps": []}.
 
-## 7. HTML
+## 8. OUTPUT VALIDATION
+
+Before returning the result, internally validate the generated JSON against these requirements:
+
+1. The output must be syntactically valid JSON.
+2. The root must be an object containing only the 'steps' property.
+3. 'steps' must be an array.
+4. Every step must contain exactly the 'inputs' and 'action' properties.
+5. Every input must contain exactly the 'element' and 'value' properties.
+6. Every non-null action must contain exactly the 'element' and 'action' properties.
+7. All XPath expressions must be valid XPath expressions.
+8. All input values must be strings.
+9. Every action must use the supported action name 'click'.
+10. Do not include additional properties or explanatory text.
+
+If any validation requirement is not satisfied, correct the output before returning it.
+
+Return ONLY the JSON object. Do not include Markdown code fences, explanations, or any other text.
+
+## 9. HTML
 
 ***HTML***
 

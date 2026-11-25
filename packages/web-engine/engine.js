@@ -16,13 +16,14 @@ class DeeplyzerWebEngine {
 
         // generate
         const testCase = await this.generate.generateTestCases(this.llm, this.src);
-console.log(JSON.stringify(testCase));
+        this.logger.detailed("deeplyzer-web-engine: " + JSON.stringify(testCase));
 
         // execute
         await this.exec.init();
         await this.exec.navigate(this.url);
         const result = await this.exec.execTestCase(testCase);
-console.log(result);
+        this.logger.detailed("deeplyzer-web-engine: " + JSON.stringify(result));
+
         results.push({
             testCase: testCase,
             result: result, 
@@ -31,7 +32,8 @@ console.log(result);
 
         // assess
         const conclusion = await this.assess.assessResults(this.llm, results);
-console.log(conclusion);
+        this.logger.detailed("deeplyzer-web-engine: " + JSON.stringify(conclusion));
+
         return conclusion;
     }
  }

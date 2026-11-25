@@ -1,4 +1,4 @@
-const LLM = require('../../..//llm/llm');
+const LLM = require('../../../llm/llm');
 const PromptsUtil = require('../../../utils/promptsUtil');
 const globals = require("../../../globals");
 const Logger = require('../../../utils/logger');
