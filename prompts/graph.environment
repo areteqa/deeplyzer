@@ -16,6 +16,8 @@ Analyze all supplied files holistically and identify the minimum number of execu
 
 Group related files that belong to the same application. Do not create separate environments unnecessarily.
 
+Every identified environment must include the names of all supplied files applicable to that environment.
+
 ## 2. ENVIRONMENT IDENTIFICATION
 
 For each environment, determine:
@@ -50,17 +52,32 @@ For each environment, determine:
 - Do not include installation commands; workflow runner installations are handled separately.
 - Infer commands from the supplied files and application architecture.
 
-### Dynamic Runner Restriction
+### files
+
+- Include all filenames applicable to the identified environment.
+- Use the exact file names supplied in the input.
+- Do not include file paths, directory paths, or modified filenames.
+- Include source files, configuration files, dependency manifests, build files, and other relevant files belonging to the environment.
+- Include files that contribute to the application's execution, configuration, build, or validation.
+- Do not include unrelated files merely because they are located in the same directory.
+- Do not omit files that are relevant to the environment.
+- A file must not be assigned to an unrelated environment.
+- A file may belong to multiple environments only when it genuinely contributes to the execution or configuration of each environment.
+- Do not create an environment solely to accommodate a file.
+- If multiple applications share files, include those shared files in each applicable environment.
+
+## 3. DYNAMIC RUNNER RESTRICTION
 
 When `workflowRunner` is `"dynamic"`:
 
 - `commands` MUST always be an empty array.
 - Do not generate application execution commands.
 - Runtime identification is still required.
+- The `files` array must still contain all files applicable to this environment.
 
 Only generate executable commands when a predefined workflow runner is selected.
 
-### Application Execution Commands
+## 4. APPLICATION EXECUTION COMMANDS
 
 When a predefined workflow runner is selected:
 
@@ -75,7 +92,7 @@ When a predefined workflow runner is selected:
 9. Return an empty array only when execution commands cannot reasonably be determined.
 10. Do not invent application-specific scripts or unsupported execution procedures.
 
-## 3. HOLISTIC ANALYSIS
+## 5. HOLISTIC ANALYSIS
 
 1. Analyze all supplied files collectively.
 2. Identify application architecture, technology stack, and execution requirements.
@@ -89,8 +106,11 @@ When a predefined workflow runner is selected:
 10. Do not assume that missing execution commands mean an environment cannot be identified.
 11. Create only the minimum environments necessary.
 12. Ensure the selected runtime and workflow runner are compatible with the identified execution requirements.
+13. Ensure every supplied file relevant to an identified application is included in the appropriate environment's `files` array.
+14. Do not force unrelated files into an environment to achieve complete file coverage.
+15. Ensure the same application is not unnecessarily split into multiple environments.
 
-## 4. OUTPUT FORMAT
+## 6. OUTPUT FORMAT
 
 Return strictly valid JSON using exactly this structure:
 
@@ -101,12 +121,16 @@ Return strictly valid JSON using exactly this structure:
             "runtime": "Specific runtime and tooling required",
             "commands": [
                 "execution command"
+            ],
+            "files": [
+                "filename1",
+                "filename2"
             ]
         }
     ]
 }
 
-## 5. FINAL VALIDATION
+## 7. FINAL VALIDATION
 
 Before responding, verify that:
 
@@ -120,6 +144,11 @@ Before responding, verify that:
 - Commands are in the correct execution order.
 - No installation commands are included.
 - No unnecessary environments were created.
+- Every environment has a `files` array.
+- Each `files` array contains the exact filenames applicable to that environment.
+- No relevant supplied files were accidentally omitted.
+- No unrelated files were included.
+- Shared files are included in every environment where they are genuinely applicable.
 - The output is valid JSON and contains only the specified properties.
 
 Return only valid JSON. Do not include explanations, markdown, comments, or additional properties.

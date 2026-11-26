@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const globals = require('../globals');
+const IdUtil = require('../utils/idUtil');
 
 class WorkflowService {
 
@@ -32,6 +33,7 @@ class WorkflowService {
                 const rootNode = allNodes[0];
 
                 workflowMap.set(rootNode.id, {
+                    id: IdUtil.generate(),
                     node: rootNode.id,
                     childNodes: allNodes
                         .slice(1)
@@ -41,6 +43,7 @@ class WorkflowService {
         } else {
             for (const nodeId of functionNodeIds) {
                 workflowMap.set(nodeId, {
+                    id: IdUtil.generate(),
                     node: nodeId,
                     childNodes: []
                 });

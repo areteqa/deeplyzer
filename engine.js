@@ -44,7 +44,11 @@ class Engine {
             }
 
             // step 3: define environments
-            await this.environmentService.define();
+            if(SessionManager.checkStage("define_environments")) {
+                await this.environmentService.define();
+
+                SessionManager.updateStage("define_environments");
+            }
 
             // step 4: perform static code analysis
             /*if (SessionManager.checkStage("static_analysis")) {

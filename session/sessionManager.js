@@ -16,6 +16,7 @@ class SessionManager {
         BUILD_NODES: "build_nodes",
         CONNECT_EDGES: "connect_edges",
         BUILD_WORKFLOWS: "build_workflows",
+        DEINFE_ENVIRONMENTS: "define_environments",
         STATIC_ANALYSIS: "static_analysis",
         DEEP_ANALYSIS: "deep_analysis",
     };
