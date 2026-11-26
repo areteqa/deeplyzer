@@ -30,6 +30,8 @@ class EnvironmentService {
         Logger.detailed("Define Environments: " + JSON.stringify(response));
 
         this._savEnvironments(response.environments);
+
+        return response.environments;
     }
 
     _readOpenPackageDefinitions() {
@@ -37,6 +39,20 @@ class EnvironmentService {
         const content = fs.readFileSync(filePath, 'utf8');
 
         return content;
+    }
+
+    loadEnvironments() {
+        if (!fs.existsSync(EnvironmentService.environmentsFile)) {
+            return [];
+        }
+
+        try {
+            return JSON.parse(
+                fs.readFileSync(EnvironmentService.environmentsFile, "utf8")
+            );
+        } catch (error) {
+            throw new Error(`Failed to load environments: ${error.message}`);
+        }
     }
 
     _savEnvironments(environments) {

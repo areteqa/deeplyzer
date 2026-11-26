@@ -12,7 +12,7 @@ class EnvironmentAgent {
     }
 
     async setup(workflow) {
-        const environment = globals.environments.find(env => env.workflows.includes(workflow.name));
+        const environment = this._findEnvironment(workflow);
 
         if (!this.existingEnvironments.includes(environment.name)) {
             let results = [];
@@ -93,6 +93,32 @@ class EnvironmentAgent {
         Logger.detailed("Setup Exit: " + response);
 
         return String(response || "").trim().toUpperCase() === "TRUE";
+    }
+
+    _findEnvironment(workflow) {
+        // 1. Collect node IDs
+        const nodeIds = new Set([
+            workflow.node,
+            ...(workflow.childNodes || [])
+        ]);
+
+        // 2. Map node IDs to source files
+        const sourceFiles = new Set();
+
+        for (const graph of globals.graphs || []) {
+            const nodes = graph.graph?.nodes || [];
+
+            if (nodes.some(node => nodeIds.has(node.id))) {
+                if (graph.file?.file) {
+                    sourceFiles.add(graph.file.file);
+                }
+            }
+        }
+
+        // 3. Find matching environments
+        return (globals.environments || []).find(environment =>
+            (environment.files || []).some(file => sourceFiles.has(file))
+        );
     }
 }
 

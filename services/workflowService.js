@@ -103,6 +103,42 @@ class WorkflowService {
             childNodes.push(target);
         }
     }
+
+    fillSources() {
+        for (const workflow of globals.workflows || []) {
+
+            const nodeIds = new Set([
+                workflow.node,
+                ...(workflow.childNodes || [])
+            ]);
+
+            const sources = [];
+
+            for (const graph of globals.graphs || []) {
+
+                const nodes = (graph.graph?.nodes || []).filter(
+                    node => nodeIds.has(node.id)
+                );
+
+                if (!nodes.length || !graph.file?.path) {
+                    continue;
+                }
+
+                const content = fs.readFileSync(graph.file.path, "utf8");
+                const lines = content.split(/\r?\n/);
+
+                for (const node of nodes) {
+                    const code = lines
+                        .slice(node.startLine - 1, node.endLine)
+                        .join("\n");
+
+                    sources.push(code);
+                }
+            }
+
+            workflow.src = sources.join("\n\n");
+        }
+    }
 }
 
 module.exports = WorkflowService;

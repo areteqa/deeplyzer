@@ -2,7 +2,7 @@ const globals = {
   config: {},
   graphs: [],
   workflows: null,
-  environments: [],
+  environments: null,
   openPackages: []
 };
 

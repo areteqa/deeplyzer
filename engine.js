@@ -43,11 +43,17 @@ class Engine {
                 globals.workflows = this.workflowService.loadWorkflows();
             }
 
+            this.workflowService.fillSources();
+
             // step 3: define environments
             if(SessionManager.checkStage("define_environments")) {
-                await this.environmentService.define();
+                globals.environments = await this.environmentService.define();
 
                 SessionManager.updateStage("define_environments");
+            }
+
+            if(!globals.environments) {
+                globals.environments = this.environmentService.loadEnvironments();
             }
 
             // step 4: perform static code analysis
@@ -63,7 +69,7 @@ class Engine {
             if (SessionManager.checkStage("deep_analysis")) {
                 if (globals.config.deep_analysis ?? true) {
                     Logger.essential("[ENGINE] Starting deep analysis...");
-                    this.orchestratorAgent.start();
+                    await this.orchestratorAgent.start(globals.workflows);
                     
                     SessionManager.updateStage("deep_analysis");
                 }
