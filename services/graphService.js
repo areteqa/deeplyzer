@@ -17,21 +17,25 @@ class GraphService {
     }
 
     async buildGraphs() {
-        Logger.essential("Finding source exclusions");
-        await this._identifyExclusions();
+        if(SessionManager.checkStage("find_exclusions")) {
+            Logger.essential("Finding source exclusions");
+            await this._identifyExclusions();
+            
+            SessionManager.updateStage("find_exclusions");
+        }
 
         if(SessionManager.checkStage("build_nodes")) {
             Logger.essential("Building nodes is in-progress");
             await this._buildNodes();
 
-            SessionManager.updateSession({ stages: ["build_nodes"] });
+            SessionManager.updateStage("build_nodes");
         }
 
         if(SessionManager.checkStage("connect_edges")) {
             Logger.essential("Connecting edges");
             await this._buildExternalEdges();
 
-            SessionManager.updateSession({ stages: ["connect_edges"] });
+            SessionManager.updateStage("connect_edges");
         }
     }
 
@@ -43,10 +47,10 @@ class GraphService {
         prompt = prompt.replaceAll("***PATHS***", JSON.stringify(folders));
         Logger.detailed(prompt);
 
-        const response = await this.llm.generate({ prompt: prompt });
-        Logger.detailed(response);
+        const response = await this.llm.generate({ prompt: prompt, json: true });
+        Logger.detailed(JSON.stringify(response));
 
-        this.additionalExclusions = Array.isArray(response) ? response : [];
+        this.additionalExclusions = response.exclusions;
     }
 
     async loadGraphs() {
@@ -98,13 +102,12 @@ class GraphService {
                     prompt = prompt.replaceAll("ID-PREFIX", IdUtil.generate());
                     Logger.detailed(prompt);
 
-                    const response = await this.llm.generate({ prompt: prompt });
-                    Logger.detailed(response);
+                    const graph = await this.llm.generate({ prompt: prompt, json: true });
+                    Logger.detailed(JSON.stringify(graph));
 
-                    const graph = JSON.parse(response.text);
                     const graphPath = `./graph/${IdUtil.generate()}.json`;
 
-                    this.fileUtil.saveJSON(graphPath, { file: source, graph });
+                    this.fileUtil.saveJSON(graphPath, { file: source, graph: graph });
 
                     return { graphPath, file: source, graph };
                 })

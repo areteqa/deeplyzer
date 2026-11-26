@@ -30,13 +30,15 @@ Each string must represent a file or folder path to exclude, relative to the pro
 
 Example:
 
-[
-  "node_modules/",
-  "dist/",
-  "coverage/",
-  ".cache/",
-  "package-lock.json"
-]
+{
+"exclusions" : [
+    "node_modules/",
+    "dist/",
+    "coverage/",
+    ".cache/",
+    "package-lock.json"
+  ]
+}
 
 Do not include explanations, descriptions, objectives, Markdown, or code fences.
 

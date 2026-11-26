@@ -4,7 +4,7 @@ const path = require("path");
 
 class SessionManager {
 
-    static STATUS = {
+    static STATE = {
         NONE: "none",
         IN_PROGRESS: "in_progress",
         COMPLETED: "completed",
@@ -13,6 +13,7 @@ class SessionManager {
 
     static STAGES = {
         NONE: "none",
+        FIND_EXCLUSIONS: "find_exclusions",
         BUILD_NODES: "build_nodes",
         CONNECT_EDGES: "connect_edges",
         BUILD_WORKFLOWS: "build_workflows",
@@ -34,8 +35,8 @@ class SessionManager {
 
         if (!fs.existsSync(this.sessionFile)) {
             this.session = {
-                status: this.STATUS.IN_PROGRESS,
-                currentStage: this.STAGES.NONE,
+                state: this.STATE.IN_PROGRESS,
+                currentStage: this.STAGES.NONE
             };
             this._writeSession();
             return this.session;
@@ -45,23 +46,30 @@ class SessionManager {
             this.session = JSON.parse(
                 fs.readFileSync(this.sessionFile, "utf8")
             );
-
-            return this.session;
-
         } catch (error) {
             throw new Error(`Failed to load session: ${error.message}`);
         }
     }
 
-    static updateSession(state = {}) {
+    static updateState(state) {
         if (!this.session) {
             this.loadSession();
         }
 
-        this.session = {
-            ...this.session,
-            ...state
-        };
+         this.session.state = state;
+
+        this._writeSession();
+
+        return this.session;
+    }
+
+
+    static updateStage(stage) {
+        if (!this.session) {
+            this.loadSession();
+        }
+
+         this.session.currentStage = stage;
 
         this._writeSession();
 
@@ -70,10 +78,9 @@ class SessionManager {
 
     static clearSession() {
         this.session = {
-            status: this.STATUS.NONE,
+            state: this.STATE.NONE,
             currentStage: this.STAGES.NONE
         };
-
         this._writeSession();
         return this.session;
     }
@@ -83,16 +90,15 @@ class SessionManager {
             this.loadSession();
         }
 
-        const stageIndex = this.STAGES.indexOf(stage);
+        const stages = Object.values(this.STAGES);
+
+        const stageIndex = stages.indexOf(stage);
 
         if (stageIndex === -1) {
             throw new Error(`Invalid stage: ${stage}`);
         }
 
-        const lastCompletedIndex = Math.max(
-            ...this.session.stages.map(s => this.STAGES.indexOf(s)),
-            -1
-        );
+        const lastCompletedIndex = stages.indexOf(this.session.currentStage);
 
         return stageIndex > lastCompletedIndex;
     }
@@ -105,6 +111,10 @@ class SessionManager {
             JSON.stringify(this.session, null, 4),
             "utf8"
         );
+    }
+
+    static getStageList() {
+        return Object.values(this.STAGES);
     }
 }
 
