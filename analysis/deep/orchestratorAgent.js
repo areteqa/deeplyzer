@@ -28,14 +28,11 @@ class OrchestratorAgent {
                 continue;
             }
 
-            switch(setup.environment.package.type) {
-                case "dynamic":
-                    await this._runDynamicWorkflow(workflow, setup.environment.setupDetails);
-                    break;
-                case "open":
-                    await this._runOpenPackageWorkflow(workflow, setup.environment);
-                    break;
-            }
+            if(setup.environment.workflowRunner == "dynamic") {
+                await this._runDynamicWorkflow(workflow, setup.environment);
+            } else {
+                await this._runOpenPackageWorkflow(workflow, setup.environment);
+            }        
         }        
     }
 
@@ -43,7 +40,7 @@ class OrchestratorAgent {
         let results = [];
 
         // PLAN
-        let plans = await this.planAgent.plan(workflow.src, environment);
+        let plans = await this.planAgent.plan(workflow.src, environment.runtime);
 
         for (const plan of plans) {
             const id = IdUtil.generate();
@@ -69,17 +66,28 @@ class OrchestratorAgent {
     }
 
     async _runOpenPackageWorkflow(workflow, environment) {
-        const result = await execUtil.createInstance(environment.package.name, environment.package.initClass);
-        const instance = result.instance;
+        // run commands
+        for(const command of environment.commands) {
+            await execUtil.exec(command);
+        }
 
-        instance.logger = Logger;
-        instance.llm = new LLM(globals.config.llm);
-        instance.src = workflow.src;
-        instance.url = "http://localhost:8080/"; // TODO
+        // workflow runner
+        const workflowRunnerPackage = globals.openPackages.find(item => item.name === environment.workflowRunner); 
+        if (workflowRunnerPackage) {
+            const result = await execUtil.createInstance(workflowRunnerPackage.name, workflowRunnerPackage.initClass);
+            const instance = result.instance;
 
-        const conclusion = await instance.start();
+            instance.logger = Logger;
+            instance.llm = new LLM(globals.config.llm);
+            instance.src = workflow.src;
+            instance.url = "http://localhost:8080/"; // TODO
 
-        return conclusion;
+            const conclusion = await instance.start();
+
+            return conclusion;
+        }
+
+        // TODO: STOP ALL PROCESSES
     }
 }
 

@@ -2,7 +2,8 @@ const globals = {
   config: {},
   graphs: null,
   workflows: null,
-  environments: []
+  environments: [],
+  openPackages: []
 };
 
 module.exports = globals;

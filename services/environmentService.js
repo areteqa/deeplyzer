@@ -15,11 +15,15 @@ class EnvironmentService {
 
     async define() {
         const files = globals.graphs.map(graph => graph.file).filter(Boolean);
-        const openDefinitions = this._readOpenDefinitions();
+        let openPackageDefinitions = this._readOpenPackageDefinitions();
+        openPackageDefinitions = JSON.parse(openPackageDefinitions);
+        globals.openPackages = openPackageDefinitions;
+        
+        const definitions = openPackageDefinitions.map(item => ({ name: item.name, description: item.description }));
 
         let prompt = PromptsUtil.read("graph.environment");
         prompt = prompt.replaceAll("***FILES***", JSON.stringify(files));
-        prompt = prompt.replaceAll("***OPEN_PACKAGES***", JSON.stringify(openDefinitions));
+        prompt = prompt.replaceAll("***WORKFLOW_RUNNERS***", JSON.stringify(definitions));
         Logger.detailed("Define Environments Prompt: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
@@ -28,7 +32,7 @@ class EnvironmentService {
         this._savEnvironments(response.environments);
     }
 
-    _readOpenDefinitions() {
+    _readOpenPackageDefinitions() {
         const filePath = path.join(__dirname, '..', 'open-packages.json');
         const content = fs.readFileSync(filePath, 'utf8');
 

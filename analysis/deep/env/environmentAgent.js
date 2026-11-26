@@ -17,26 +17,21 @@ class EnvironmentAgent {
         if (!this.existingEnvironments.includes(environment.name)) {
             let results = [];
 
+            // install runtime
             for (let attempts = 0; attempts < 3; attempts++) {
-                switch (environment.package.type) {
-                    case "dynamic":
-                        results = await this._setupDynamic(environment.setupDetails, results);
-                        break;
-
-                    case "open":
-                        results = await this._setupOpen(environment.name, environment.installations);
-                        break;
-
-                    default:
-                        throw new Error(`Unsupported package type: ${environment.package}`);
-                }
-
-                const assessment = await this._assessResults(environment.setupDetails, results);
+                results = await this._setupRuntime(environment.runtime, results);
+                const assessment = await this._assessResults(environment.runtime, results);
 
                 if (assessment) {
                     this.existingEnvironments.push(environment.name);
                     break;
                 }
+            }
+
+            // install open package if required for the environment
+            const workflowRunnerPackage = globals.openPackages.find(item => item.name === environment.workflowRunner);
+            if (workflowRunnerPackage) {
+                results = await this._setupOpenPackage(workflowRunnerPackage.name, workflowRunnerPackage.installations);
             }
         }
 
@@ -48,7 +43,7 @@ class EnvironmentAgent {
         }
     }
 
-    async _setupOpen(packageName, installations) {
+    async _setupOpenPackage(packageName, installations) {
         const results = [];
 
         const installResult = await execUtil.installPackage(packageName);
@@ -68,12 +63,12 @@ class EnvironmentAgent {
         return results;
     }
 
-    async _setupDynamic(setupDetails, existingResults) {
-        let prompt = PromptsUtil.read("deep.env.dynamic");
-        prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
+    async _setupRuntime(runtimeDetails, existingResults) {
+        let prompt = PromptsUtil.read("deep.env.runtime");
+        prompt = prompt.replaceAll("***RUNTIME_DETAILS***", runtimeDetails);
         prompt = prompt.replaceAll("***OS***", process.platform);
         prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(existingResults ?? "NONE"));
-        Logger.detailed("Setup dynamic details: " + prompt);
+        Logger.detailed("Setup runtime details: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
         Logger.detailed("Commands Generated: " + JSON.stringify(response));
@@ -88,11 +83,11 @@ class EnvironmentAgent {
         return results;
     }
 
-    async _assessResults(setupDetails, results) {
+    async _assessResults(runtimeDetails, results) {
         let prompt = PromptsUtil.read("deep.env.assess");
-        prompt = prompt.replaceAll("***SETUP_DETAILS***", setupDetails);
+        prompt = prompt.replaceAll("***RUNTIME_DETAILS***", runtimeDetails);
         prompt = prompt.replaceAll("***RESULTS***", JSON.stringify(results ?? "NONE"));
-        Logger.detailed("Setup dynamic details: " + prompt);
+        Logger.detailed("Setup runtime details: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, text: true });
         Logger.detailed("Setup Exit: " + response);

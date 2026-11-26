@@ -1,74 +1,125 @@
-Analyze the supplied file object and available open package definitions. Identify the most suitable execution environment.
+# ENVIRONMENT IDENTIFICATION PROMPT
 
-- If an existing open package matches the file's requirements, select it and populate its package details.
-- Otherwise, define a dynamic environment with the required runtime.
+You are an environment identification engine responsible for analyzing supplied project files and identifying the execution environments required to run or validate them.
 
-Return ONLY valid JSON using the following format.
+## INPUT
 
-**Format:**
-
-{
-  "environments": [
-    {
-      "name": "environment name",
-      "package": {
-        "type": "dynamic | open",
-        "name": "package name (open only)",
-        "initClass": "initialization class (open only)",
-        "installations": ["installation commands (open only)"]
-      },
-      "setupDetails": "Runtime or environment setup requirements"
-    }
-  ]
-}
-
-**Example — Dynamic environment:**
-
-{
-  "environments": [
-    {
-      "name": "python",
-      "package": {
-        "type": "dynamic"
-      },
-      "setupDetails": "python runtime"
-    }
-  ]
-}
-
-**Example — Open package:**
-
-{
-  "environments": [
-    {
-      "name": "deeplyzer-web-engine",
-      "package": {
-        "type": "open",
-        "name": "deeplyzer-web-engine",
-        "initClass": "DeeplyzerWebEngine",
-        "installations": [
-          "npm install playwright",
-          "npx playwright install chromium"
-        ]
-      },
-      "setupDetails": ""
-    }
-  ]
-}
-
-**Rules:**
-
-1. Use `"type": "open"` when selecting an existing package. Copy its name, initClass, and installations exactly.
-2. Use `"type": "dynamic"` when no suitable open package exists. Specify the required runtime in setupDetails.
-3. The `installations` field must exist only for open packages.
-4. The `name`, `initClass`, and `installations` fields must exist only for open packages.
-5. For open packages, keep setupDetails empty.
-6. Select the simplest suitable environment.
-7. Do not invent package definitions or installation commands.
-8. Return only valid JSON. Do not include explanations or Markdown.
-
-**FILES**
+### FILE DATA
 ***FILES***
 
-**OPEN PACKAGE DEFINITIONS**
-***OPEN_PACKAGES***
+### AVAILABLE WORKFLOW RUNNERS
+***WORKFLOW_RUNNERS***
+
+## 1. OBJECTIVE
+
+Analyze all supplied files holistically and identify the minimum number of execution environments required.
+
+Group related files that belong to the same application. Do not create separate environments unnecessarily.
+
+## 2. ENVIRONMENT IDENTIFICATION
+
+For each environment, determine:
+
+### workflowRunner
+
+- Select the most appropriate workflow runner from the supplied runners.
+- Evaluate all available runners before making a selection.
+- Choose the closest suitable runner based on its name, description, and capabilities.
+- Do not require an exact technology or framework match.
+- Prefer specialized runners over general-purpose runners.
+- Use the exact runner `name` supplied.
+- Use `"dynamic"` only when no available runner is reasonably suitable.
+- Never default to `"dynamic"` simply because execution details are incomplete.
+
+### runtime
+
+- Identify the most appropriate runtime and tooling required to execute the application or task.
+- Infer suitable installable runtimes and tools even when they are not explicitly mentioned in the files.
+- Prefer concrete runtime and package names over generic descriptions.
+- Consider programming languages, frameworks, platforms, and execution requirements.
+- Do not limit runtime selection to the supplied workflow runners.
+- Avoid vague descriptions such as "appropriate tooling" or "execution environment".
+- Include all essential runtime requirements without unnecessary dependencies.
+
+### commands
+
+- Identify commands required to build, start, execute, or validate the application.
+- Commands must be executable shell commands.
+- Include multiple commands when multiple independent processes are required.
+- Consider execution dependencies and command order.
+- Do not include installation commands; workflow runner installations are handled separately.
+- Infer commands from the supplied files and application architecture.
+
+### Dynamic Runner Restriction
+
+When `workflowRunner` is `"dynamic"`:
+
+- `commands` MUST always be an empty array.
+- Do not generate application execution commands.
+- Runtime identification is still required.
+
+Only generate executable commands when a predefined workflow runner is selected.
+
+### Application Execution Commands
+
+When a predefined workflow runner is selected:
+
+1. Always identify the commands required to build, start, or execute the application.
+2. Infer standard execution commands from the supplied files, project structure, configuration, dependency manifests, and available scripts.
+3. Prefer existing project-defined commands when available.
+4. When explicit commands are unavailable, infer the standard execution procedure based on the identified technology and application architecture.
+5. Include all necessary commands for independently running application components.
+6. Include commands in their required execution order.
+7. Do not include dependency installation commands.
+8. Do not leave `commands` empty when execution commands can reasonably be inferred.
+9. Return an empty array only when execution commands cannot reasonably be determined.
+10. Do not invent application-specific scripts or unsupported execution procedures.
+
+## 3. HOLISTIC ANALYSIS
+
+1. Analyze all supplied files collectively.
+2. Identify application architecture, technology stack, and execution requirements.
+3. Distinguish source files, configuration files, dependency manifests, build files, and entry points.
+4. Identify related and independent applications.
+5. Group files sharing the same execution lifecycle.
+6. Identify separate frontend, backend, worker, or standalone execution environments when necessary.
+7. Do not create environments for configuration files that do not independently require execution.
+8. Prefer the most suitable available workflow runner.
+9. Infer the most appropriate installable runtime and tooling based on the task.
+10. Do not assume that missing execution commands mean an environment cannot be identified.
+11. Create only the minimum environments necessary.
+12. Ensure the selected runtime and workflow runner are compatible with the identified execution requirements.
+
+## 4. OUTPUT FORMAT
+
+Return strictly valid JSON using exactly this structure:
+
+{
+    "environments": [
+        {
+            "workflowRunner": "runner-name-or-dynamic",
+            "runtime": "Specific runtime and tooling required",
+            "commands": [
+                "execution command"
+            ]
+        }
+    ]
+}
+
+## 5. FINAL VALIDATION
+
+Before responding, verify that:
+
+- All supplied files were considered holistically.
+- The minimum required environments were identified.
+- The most suitable available workflow runner was selected.
+- `"dynamic"` was used only when no supplied runner was suitable.
+- Dynamic environments always have an empty `commands` array.
+- Concrete, installable runtimes and tools were identified.
+- Predefined runner environments contain the appropriate application execution commands whenever they can reasonably be inferred.
+- Commands are in the correct execution order.
+- No installation commands are included.
+- No unnecessary environments were created.
+- The output is valid JSON and contains only the specified properties.
+
+Return only valid JSON. Do not include explanations, markdown, comments, or additional properties.

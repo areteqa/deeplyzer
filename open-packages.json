@@ -2,7 +2,7 @@
     {
         "name": "deeplyzer-web-engine",
         "initClass": "DeeplyzerWebEngine",
-        "description": "A Node.js package for automating web application testing using Playwright. Launches and controls a browser to navigate web applications, interact with UI elements, and execute test steps. Supports XPath-based element identification, input handling, clicks, keyboard interactions, and event triggering. Captures execution results, errors, and browser state to validate application behavior and identify issues.",
+        "description": "Workflow runner for web applications",
         "installations": [
             "npm install playwright",
             "npx playwright install chromium"

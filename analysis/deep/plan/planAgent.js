@@ -8,12 +8,12 @@ class PlanAgent {
         this.llm = new LLM(globals.config.llm);
     }
 
-    async plan(src, environment) {
+    async plan(src, runtime) {
         // prompt for prompt, sequence, formatted output
         let prompt = PromptsUtil.read("deep.plans");
         prompt = prompt.replaceAll("***SOURCE***", src);
         prompt = prompt.replaceAll("***OS***", process.platform);
-        prompt = prompt.replaceAll("***ENVIRONMENT***", environment);
+        prompt = prompt.replaceAll("***RUNTIME***", runtime);
         Logger.detailed("Generated Plans Prompt: " + prompt);
 
         const response = await this.llm.generate({ prompt: prompt, json: true });
