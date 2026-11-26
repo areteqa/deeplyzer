@@ -1,15 +1,16 @@
 const fs = require("fs");
 const path = require("path");
+const globals = require('../globals');
 
 class WorkflowService {
 
     static baseDir = path.join(process.cwd(), ".deeplyzer");
     static workflowFile = path.join(WorkflowService.baseDir, "workflows.json");
 
-    build(graphs = []) {
+    build() {
         const functionNodeIds = new Set();
 
-        for (const graph of graphs) {
+        for (const graph of globals.graphs) {
             const nodes = graph.graph?.nodes || [];
 
             for (const node of nodes) {
@@ -23,7 +24,7 @@ class WorkflowService {
 
         // Fallback: entire graph becomes a single workflow
         if (functionNodeIds.size === 0) {
-            const allNodes = graphs.flatMap(
+            const allNodes = globals.graphs.flatMap(
                 graph => graph.graph?.nodes || []
             );
 

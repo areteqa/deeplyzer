@@ -13,7 +13,6 @@ class SessionManager {
 
     static STAGES = {
         NONE: "none",
-        FIND_EXCLUSIONS: "find_exclusions",
         BUILD_NODES: "build_nodes",
         CONNECT_EDGES: "connect_edges",
         BUILD_WORKFLOWS: "build_workflows",

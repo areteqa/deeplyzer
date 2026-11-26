@@ -1,6 +1,6 @@
 const globals = {
   config: {},
-  graphs: null,
+  graphs: [],
   workflows: null,
   environments: [],
   openPackages: []

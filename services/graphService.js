@@ -17,14 +17,10 @@ class GraphService {
     }
 
     async buildGraphs() {
-        if(SessionManager.checkStage("find_exclusions")) {
+        if(SessionManager.checkStage("build_nodes")) {
             Logger.essential("Finding source exclusions");
             await this._identifyExclusions();
-            
-            SessionManager.updateStage("find_exclusions");
-        }
-
-        if(SessionManager.checkStage("build_nodes")) {
+        
             Logger.essential("Building nodes is in-progress");
             await this._buildNodes();
 

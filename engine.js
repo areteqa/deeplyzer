@@ -24,25 +24,23 @@ class Engine {
             SessionManager.updateState("in_progress");
 
             // step 1: build graph
-            let graphs;
             if (globals.config.build_graph ?? true) {
-                graphs = await this.graphService.buildGraphs();
+                globals.graphs = await this.graphService.buildGraphs();
             }
 
-            if(!graphs) {
-                graphs = await this.graphService.loadGraphs();
+            if(!globals.graphs || globals.graphs.length == 0) {
+                globals.graphs = await this.graphService.loadGraphs();           
             }
 
             // step 2: build workflows
-            let workflows;
             if(SessionManager.checkStage("build_workflows")) {
-                workflows = this.workflowService.build(graphs);
+                globals.workflows = this.workflowService.build();
 
                 SessionManager.updateStage("build_workflows");
             }
 
-            if(!workflows) {
-                workflows = this.workflowService.loadWorkflows();
+            if(!globals.workflows) {
+                globals.workflows = this.workflowService.loadWorkflows();
             }
 
             // step 3: define environments
@@ -61,7 +59,7 @@ class Engine {
             if (SessionManager.checkStage("deep_analysis")) {
                 if (globals.config.deep_analysis ?? true) {
                     Logger.essential("[ENGINE] Starting deep analysis...");
-                    this.orchestrator.start();
+                    this.orchestratorAgent.start();
                     
                     SessionManager.updateStage("deep_analysis");
                 }
