@@ -107,9 +107,11 @@ class GraphService {
 
                     const graphPath = `./graph/${IdUtil.generate()}.json`;
 
-                    this.fileUtil.saveJSON(graphPath, { file: source, graph: graph });
+                    source.purpose = graph.purpose;
+                    const sourceJson = { file: path.basename(source.path), path: source.path,  purpose: graph.purpose };
+                    this.fileUtil.saveJSON(graphPath, { file: sourceJson, graph: { nodes: graph.nodes, edges: graph.edges } });
 
-                    return { graphPath, file: source, graph };
+                    return { graphPath, file: source, graph: { nodes: graph.nodes, edges: graph.edges } };
                 })
             );
 
@@ -192,8 +194,9 @@ class GraphService {
                         }
                     }
 
+                    const sourceJson = { file: path.basename(sourceGraph.file.path), path: sourceGraph.file.path,  purpose: sourceGraph.file.purpose };
                     this.fileUtil.saveJSON(sourceGraph.graphPath, {
-                        file: sourceGraph.file,
+                        file: sourceJson,
                         graph: sourceGraph.graph
                     });
                 })

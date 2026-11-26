@@ -21,25 +21,43 @@ class WorkflowService {
 
         const workflowMap = new Map();
 
-        for (const nodeId of functionNodeIds) {
-            workflowMap.set(nodeId, {
-                node: nodeId,
-                childNodes: []
-            });
-        }
+        // Fallback: entire graph becomes a single workflow
+        if (functionNodeIds.size === 0) {
+            const allNodes = graphs.flatMap(
+                graph => graph.graph?.nodes || []
+            );
 
-        for (const graph of graphs) {
-            const edges = graph.graph?.edges || [];
+            if (allNodes.length > 0) {
+                const rootNode = allNodes[0];
 
-            for (const edge of edges) {
-                const { node1, node2 } = edge;
+                workflowMap.set(rootNode.id, {
+                    node: rootNode.id,
+                    childNodes: allNodes
+                        .slice(1)
+                        .map(node => node.id)
+                });
+            }
+        } else {
+            for (const nodeId of functionNodeIds) {
+                workflowMap.set(nodeId, {
+                    node: nodeId,
+                    childNodes: []
+                });
+            }
 
-                if (!workflowMap.has(node1) || !workflowMap.has(node2)) {
-                    continue;
+            for (const graph of graphs) {
+                const edges = graph.graph?.edges || [];
+
+                for (const edge of edges) {
+                    const { node1, node2 } = edge;
+
+                    if (!workflowMap.has(node1) || !workflowMap.has(node2)) {
+                        continue;
+                    }
+
+                    this._addConnection(workflowMap, node1, node2);
+                    this._addConnection(workflowMap, node2, node1);
                 }
-
-                this._addConnection(workflowMap, node1, node2);
-                this._addConnection(workflowMap, node2, node1);
             }
         }
 

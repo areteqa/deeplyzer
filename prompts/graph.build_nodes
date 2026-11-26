@@ -23,6 +23,30 @@ Input may contain:
 
 Your objective is to preserve information and identify relationships, not summarize.
 
+# PURPOSE EXTRACTION
+
+Determine the primary purpose of the supplied input by analyzing its complete content.
+
+The purpose must describe what the file, source code, configuration, or document is intended to accomplish.
+
+Rules:
+
+1. Analyze the actual content to determine its purpose.
+2. For source code, identify the primary responsibility and functionality implemented by the code.
+3. For configuration files, identify what application, component, or process the configuration supports.
+4. For documentation, identify the subject, objective, and intended use.
+5. For database schemas, identify the domain or functionality represented by the schema.
+6. For UI and frontend files, identify the application's or component's intended functionality.
+7. Consider related files and context when multiple files are supplied.
+8. Describe the purpose in clear, concise language.
+9. Prefer a specific functional description over generic statements.
+10. Do not simply repeat the filename, file type, or directory name.
+11. Do not describe implementation details unless they help explain the purpose.
+12. Do not invent functionality that is not supported by the supplied content.
+13. If the purpose cannot be determined confidently, return a conservative description based only on identifiable information.
+
+The purpose must be a string, not an object or array.
+
 # 1. OUTPUT FORMAT
 
 Return valid JSON only.
@@ -30,6 +54,7 @@ Return valid JSON only.
 The output must have exactly two top-level properties:
 
 {
+  "purpose": "A concise description of the primary purpose of the supplied input",
   "nodes": [],
   "edges": []
 }
@@ -544,6 +569,7 @@ Before creating a code node, verify that its declaration or definition exists in
 Return only:
 
 {
+  "purpose": "A concise description of the primary purpose of the supplied input",
   "nodes": [],
   "edges": []
 }
