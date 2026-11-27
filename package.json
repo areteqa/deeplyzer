@@ -1,6 +1,6 @@
 {
   "name": "deeplyzer",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "description": "Go beyond static code analysis. End-to-end intelligence across code, execution flows, databases, and cloud infrastructure.",
   "main": "index.js",
   "type": "commonjs",
@@ -8,6 +8,8 @@
     "start": "node index.js"
   },
   "files": [
+    "**",
+    "!packages",
     "!packages/**"
   ],
   "keywords": [
