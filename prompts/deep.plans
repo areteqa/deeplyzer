@@ -36,7 +36,7 @@ For each plan, generate pseudocode describing a complete executable script.
 
 The pseudocode must follow this general flow:
 
-1. Identify the target functionality or resources from ***SOURCE***.
+1. Identify the target functionality or resources from **SOURCE**.
 2. Prepare the required execution environment.
 3. Incorporate supplied source code or implement the described instructions.
 4. Generate supporting code required for execution.
@@ -92,36 +92,57 @@ Support both input types:
 - Generate concrete commands compatible with the operating system.
 - Ensure generated scripts are actually executed.
 
-## 6. OUTPUT FORMAT
+OS-SPECIFIC COMMAND GENERATION
+1. Identify the operating system from ***OS***.
+2. Generate commands exclusively using syntax supported by that operating system.
+3. Select the appropriate shell and command interpreter:
+   - win32: Windows CMD or PowerShell.
+   - linux: Linux shell (Bash).
+   - darwin: macOS shell (Bash or Zsh).
+4. Adapt directory creation, file paths, environment variables, executable invocation and file operations to the selected OS.
+5. Use the appropriate runtime executable (e.g. python, python3, node).
+6. Handle OS-specific command chaining, quoting and exit codes correctly.
+7. Never generate commands from another operating system.
+8. If the OS is unknown or unsupported, do not assume a shell; report the limitation.
+
+## OUTPUT FORMAT
 
 Return ONLY a valid JSON object.
 
 {
   "plans": [
     {
-      "prompt": "Pseudocode describing the complete script generation, execution and validation workflow.",
+      "prompt": "Pseudocode describing what code to generate and which files to create.",
       "commands": [
-        "executable command"
+        "command to execute first",
+        "command to execute next"
       ]
     }
   ]
 }
 
 Each plan must contain exactly:
-- `prompt`: Pseudocode for generating the required script.
-- `commands`: Ordered executable command strings.
+- `prompt`: Must explicitly specify every file to create, its path, filename, contents or implementation responsibilities, and dependencies between generated files. Describe the complete pseudocode for generating the required code.
+- `commands`: An ordered array of executable commands to run after the files have been generated.
 
-## 7. OUTPUT VALIDATION
+## FILE GENERATION RULES
 
-Before returning:
+1. Explicitly specify all files that must be created.
+2. Specify the filename and relative or absolute path for every file.
+3. Specify the purpose and contents of each file.
+4. Include all supporting code required for execution and validation.
+5. Prefer a single self-contained script whenever practical.
+6. Do not assume generated files already exist.
+7. Do not generate unnecessary files.
+8. Ensure commands reference the exact generated filenames and paths.
 
-- Ensure valid JSON.
-- Ensure the root contains only `plans`.
-- Ensure every plan contains only `prompt` and `commands`.
-- Ensure prompt and commands are strings and arrays respectively.
-- Ensure plans are minimal and correctly ordered.
-- Ensure pseudocode covers all necessary execution and validation operations.
-- Ensure no external testing frameworks are introduced.
-- Ensure commands are compatible with the specified environment.
+## COMMAND EXECUTION RULES
 
-Return no explanations, Markdown fences or additional text outside the JSON object.
+1. Commands must execute in sequential order.
+2. The first command must prepare the required working directory if necessary.
+3. Include dependency installation only when strictly required.
+4. Execute generated scripts using the specified runtime.
+5. Include subsequent commands for additional validation only when necessary.
+6. Do not include file-generation instructions as executable commands unless the environment explicitly supports them.
+7. Never reference a file that has not been specified in the prompt.
+8. Do not use placeholders or interactive commands.
