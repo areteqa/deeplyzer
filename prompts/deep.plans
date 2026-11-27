@@ -51,22 +51,27 @@ Adapt these operations to the actual source. Do not generate irrelevant steps.
 
 ## 3. SOURCE HANDLING
 
-Support both input types:
+The supplied SOURCE is input data provided to the execution environment.
+It is not part of the generated plan's output.
 
-**Source code:**
-- Preserve the supplied implementation.
-- Build the necessary execution harness around it.
-- Simulate inputs and capture outputs where required.
-- Validate normal, boundary and error scenarios.
+For source code:
+- Treat SOURCE as an externally supplied input.
+- Never reproduce, copy, embed, quote, or regenerate the supplied implementation in generated scripts or prompts.
+- Generate only the supporting execution harness, build configuration, test cases, and validation logic.
+- The execution harness must consume SOURCE through the mechanism specified by the runtime.
+- Preserve the original implementation without modifications.
+- Do not generate a replacement implementation.
 
-**Descriptive instructions:**
+For descriptive instructions:
 - Generate the implementation required by the instructions.
 - Access actual specified resources, services or configurations.
 - Use available credentials and dependencies.
 - Validate resource existence, accessibility, configuration and behaviour.
 
-**Mixed input:**
-- Combine implementation, resource access, execution and validation as required.
+For mixed input:
+- Separate supplied source code from implementation requirements.
+- Generate only the implementation and supporting code that are not already supplied.
+- Never duplicate supplied source code.
 
 ## 4. SCRIPT REQUIREMENTS
 

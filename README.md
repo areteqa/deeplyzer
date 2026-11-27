@@ -69,10 +69,18 @@ Deeplyzer goes further. It understands how the application works, investigates t
 
 ## Installation
 
-Install Deeplyzer using npm:
+Install deeplyzer locally and run it:
 
 ```bash
 npm install deeplyzer
+npx deeplyzer <configfile>
+```
+
+Install deeplyzer globally and run it:
+
+```bash
+npm install -g deeplyzer
+deeplyzer <configfile>
 ```
 
 ## Command Line Usage

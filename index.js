@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const Engine = require("./engine");
 const SessionManager = require("./session/sessionManager");
 const Logger = require('./utils/logger');
