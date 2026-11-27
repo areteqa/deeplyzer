@@ -16,7 +16,7 @@ class SessionManager {
         BUILD_NODES: "build_nodes",
         CONNECT_EDGES: "connect_edges",
         BUILD_WORKFLOWS: "build_workflows",
-        DEINFE_ENVIRONMENTS: "define_environments",
+        DEFINE_ENVIRONMENTS: "define_environments",
         STATIC_ANALYSIS: "static_analysis",
         DEEP_ANALYSIS: "deep_analysis",
     };
@@ -80,6 +80,15 @@ class SessionManager {
         this.session = {
             state: this.STATE.NONE,
             currentStage: this.STAGES.NONE
+        };
+        this._writeSession();
+        return this.session;
+    }
+
+    static resetAnalysisSession() {
+        this.session = {
+            state: this.STATE.IN_PROGRESS,
+            currentStage: this.STAGES.DEFINE_ENVIRONMENTS
         };
         this._writeSession();
         return this.session;

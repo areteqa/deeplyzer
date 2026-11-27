@@ -75,9 +75,46 @@ Install Deeplyzer using npm:
 npm install deeplyzer
 ```
 
+## Command Line Usage
+
+- **Supply a configuration file**
+
+  ```bash
+  deeplyzer configFile.json
+  ```
+
+  This creates graphs and workflows, then runs static and deep analysis.
+
+- **Clear the session**
+
+  ```bash
+  deeplyzer clear-session
+  ```
+
+- **Reset the analysis session**
+
+  ```bash
+  deeplyzer reset-analysis-session
+  ```
+
+  This resets the session and performs only static and deep analysis.
+
 ## Configuration
 
 Create a configuration file (e.g. `deeplyzer.json`) in your project root.
+
+### Minimum Configuration
+
+```json
+{
+  "sources": ["C:\\<source folder>"],
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-6.1-sol",
+    "apiKey": "<API key goes here>"
+  }
+}
+```
 
 ```json
 {
@@ -88,7 +125,7 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
     "model": "gpt-6.1-sol",
     "apiKey": "<API key goes here>"
   },
-  "log_path": "C:\\deeplyzer\\.logs",  
+  "log_path": "C:\\<local path>\\.logs",  
   "build_graph": false,
   "deep_analysis": true,
   "static_analysis": false,
@@ -109,7 +146,7 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 | `deep_analysis` | No | true | Enable deep LLM-based analysis. |
 | `static_analysis` | No | `true` | Enable static code analysis. |
 | `batch_size` | No | `10` | Number of sources processed in each batch. |
-| `log_path` | No | - | Directory where analysis logs are written. |
+| `log_path` | No | - | Windows or platform-specific directory where logs are written (example: `C:\\deeplyzer\\.logs`). |
 
 **Note:** `build_graph`, `static_analysis`, and `batch_size` are optional. If omitted, their default values are used.
 
@@ -117,6 +154,10 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 
 - **GitHub Repository:** [github.com/areteqa/deeplyzer](https://github.com/areteqa/deeplyzer)
 - **NPM Package:** [npmjs.com/package/deeplyzer](https://www.npmjs.com/package/deeplyzer)
+
+### Workflow Runners
+
+- **deeplyzer-web-engine:** [npmjs.com/package/deeplyzer-web-engine](https://www.npmjs.com/package/deeplyzer-web-engine)
 
 ## License
 

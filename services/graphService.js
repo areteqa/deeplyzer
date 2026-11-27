@@ -18,6 +18,9 @@ class GraphService {
 
     async buildGraphs() {
         if(SessionManager.checkStage("build_nodes")) {
+            // clear all existing graph files
+            this.fileUtil.removeAllFiles("graph");
+
             Logger.essential("Finding source exclusions");
             await this._identifyExclusions();
         

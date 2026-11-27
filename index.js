@@ -16,6 +16,12 @@ const path = require("path");
             return;
         }
 
+        if (argument === "reset-analysis-session") {
+            SessionManager.resetAnalysisSession();
+            console.log("[INFO] Session reset successfully.");
+            return;
+        }
+
         // Normal execution
         SessionManager.loadSession();
 

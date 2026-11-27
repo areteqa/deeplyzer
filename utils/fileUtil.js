@@ -130,6 +130,22 @@ class FileUtil {
         return results;
     }
 
+    removeAllFiles(dir) {
+        const dirPath = path.join(this.baseDir, dir);
+
+        if (!fs.existsSync(dirPath)) return;
+
+        for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+            const entryPath = path.join(dirPath, entry.name);
+
+            if (entry.isDirectory()) {
+                this.removeAllFiles(path.join(dir, entry.name));
+            } else {
+                fs.rmSync(entryPath, { force: true });
+            }
+        }
+    }
+
     _globToRegex(pattern) {
         let regex = "";
 
