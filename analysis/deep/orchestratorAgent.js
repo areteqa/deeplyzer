@@ -47,7 +47,7 @@ class OrchestratorAgent {
 
             // GENERATE
             if (plan.prompt && plan.prompt != "") {
-                await this.generateAgent.generate(plan.prompt, id);
+                await this.generateAgent.generate(plan.prompt, workflow.src, id);
             }
 
             // EXECUTE

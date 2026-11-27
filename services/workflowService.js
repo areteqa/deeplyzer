@@ -112,28 +112,52 @@ class WorkflowService {
                 ...(workflow.childNodes || [])
             ]);
 
-            const sources = [];
+            // Group source lines by file path
+            const fileLines = new Map();
 
             for (const graph of globals.graphs || []) {
+
+                if (!graph.file?.path) {
+                    continue;
+                }
 
                 const nodes = (graph.graph?.nodes || []).filter(
                     node => nodeIds.has(node.id)
                 );
 
-                if (!nodes.length || !graph.file?.path) {
+                if (!nodes.length) {
                     continue;
                 }
 
-                const content = fs.readFileSync(graph.file.path, "utf8");
-                const lines = content.split(/\r?\n/);
+                const filePath = graph.file.path;
+
+                if (!fileLines.has(filePath)) {
+                    fileLines.set(filePath, new Set());
+                }
+
+                const lines = fileLines.get(filePath);
 
                 for (const node of nodes) {
-                    const code = lines
-                        .slice(node.startLine - 1, node.endLine)
-                        .join("\n");
-
-                    sources.push(code);
+                    for (let line = node.startLine; line <= node.endLine; line++) {
+                        lines.add(line);
+                    }
                 }
+            }
+
+            // Extract unique lines in ascending order, grouped by file
+            const sources = [];
+
+            for (const [filePath, lineNumbers] of fileLines) {
+
+                const content = fs.readFileSync(filePath, "utf8");
+                const lines = content.split(/\r?\n/);
+
+                const code = [...lineNumbers]
+                    .sort((a, b) => a - b)
+                    .map(line => lines[line - 1])
+                    .join("\n");
+
+                sources.push(code);
             }
 
             workflow.src = sources.join("\n\n");

@@ -10,8 +10,9 @@ class GenerateAgent {
         this.fileUtil = new FileUtil();
     }
 
-    async generate(generatePrompt, id) {
+    async generate(generatePrompt, src, id) {
         let outputPrompt = PromptsUtil.read("deep.generate.output");
+        outputPrompt = outputPrompt.replaceAll("***SOURCE***", src);
         outputPrompt = outputPrompt.replaceAll("***OS***", process.platform);
 
         const prompt = generatePrompt + "\n\n" + outputPrompt;
