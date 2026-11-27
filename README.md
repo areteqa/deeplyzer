@@ -103,19 +103,6 @@ npm install deeplyzer
 
 Create a configuration file (e.g. `deeplyzer.json`) in your project root.
 
-### Minimum Configuration
-
-```json
-{
-  "sources": ["C:\\<source folder>"],
-  "llm": {
-    "provider": "openai",
-    "model": "gpt-6.1-sol",
-    "apiKey": "<API key goes here>"
-  }
-}
-```
-
 ```json
 {
   "sources": [],
@@ -130,6 +117,19 @@ Create a configuration file (e.g. `deeplyzer.json`) in your project root.
   "deep_analysis": true,
   "static_analysis": false,
   "batch_size": 10
+}
+```
+
+### Minimum Configuration
+
+```json
+{
+  "sources": ["C:\\<source folder>"],
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-6.1-sol",
+    "apiKey": "<API key goes here>"
+  }
 }
 ```
 
